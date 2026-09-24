@@ -91,7 +91,7 @@ docs/
 
 ### Pré-requisitos
 
-- **Node.js 22.18 ou superior** (o projeto é desenvolvido no Node 24).
+- **Node.js 22 (a partir da 22.18) ou 24**. O projeto é desenvolvido no Node 24. As versões ímpares, 23 e 25, não são suportadas pelo Vitest.
 - Um **projeto no Firebase** com:
   - **Authentication** com o provedor **Google** ativado;
   - **Cloud Firestore** criado;
