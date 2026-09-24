@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Caderno do Caçador: objetivos</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400..700;1,400..700&amp;family=Rye&amp;display=swap">
+<style>
+body{margin:0}
+a{color:inherit}
+button{font:inherit}
+button:focus-visible,a:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+button:disabled{cursor:default}
+</style>
+</helmet>
+<div style="width: 1280px; height: 1760px; box-sizing: border-box; overflow: hidden; background: {{c.papel}}; color: {{c.tinta}}; font-family: 'Libre Caslon Text', Georgia, serif; display: flex; flex-direction: column">
+
+<header style="display: flex; align-items: center; justify-content: space-between; gap: 32px; padding: 32px 32px 24px 32px; border-bottom: 1px solid {{c.linha}}">
+<div style="display: flex; align-items: baseline; gap: 32px">
+<div style="font-family: Rye, Georgia, serif; font-size: 40px; line-height: 44px; color: {{c.tinta}}">Caderno do Caçador</div>
+<nav aria-label="Seções" style="display: flex; gap: 24px; font-size: 17px; line-height: 28px">
+<a href="#objetivos" aria-current="page" style="text-decoration: none; color: {{c.tinta}}; border-bottom: 2px solid {{c.sangue}}; padding-bottom: 2px">Objetivos</a>
+<a href="#itens" style="text-decoration: none; color: {{c.desb}}">Itens</a>
+<a href="#origens" style="text-decoration: none; color: {{c.desb}}">Origens</a>
+<a href="#finalidades" style="text-decoration: none; color: {{c.desb}}">Finalidades</a>
+</nav>
+</div>
+<div style="display: flex; align-items: center; gap: 16px">
+<button type="button" style="background: transparent; border: none; padding: 8px; color: {{c.desb}}; font-size: 17px; cursor: pointer">Sair</button>
+<a href="ModalObjetivo.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; box-sizing: border-box; background: {{c.sangue}}; color: {{c.sobre}}; border-radius: 3px; text-decoration: none; font-size: 17px; font-weight: 700">Novo objetivo</a>
+</div>
+</header>
+
+<main style="display: flex; flex-direction: column; gap: 32px; padding: 32px">
+<sc-for list="{{grupos}}" as="g" hint-placeholder-count="4">
+<section style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: baseline; gap: 16px; padding-bottom: 8px; border-bottom: 1px solid {{c.linha}}">
+<h2 style="margin: 0; font-family: Rye, Georgia, serif; font-weight: 400; font-size: 22px; line-height: 28px; color: {{g.cor}}">{{g.nome}}</h2>
+<span style="font-size: 14px; line-height: 20px; font-style: italic; color: {{c.desb}}">{{g.contagem}}</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start">
+<sc-for list="{{g.cards}}" as="card" hint-placeholder-count="2">
+<article style="display: flex; flex-direction: column; gap: 12px; padding: 16px; background: {{card.bg}}; border-top: {{card.borda}}">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+<span style="display: inline-block; padding: 4px 8px; border: 2px solid {{card.cor}}; border-radius: 3px; color: {{card.cor}}; font-size: 13px; line-height: 16px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; transform: rotate(-2deg)">{{card.status}}</span>
+<div style="display: flex; gap: 4px">
+<a href="ModalObjetivo.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 8px; color: {{c.desb}}; font-size: 14px; font-style: italic">Editar</a>
+<button type="button" style="min-height: 44px; padding: 0 8px; background: transparent; border: none; color: {{c.desb}}; font-size: 14px; font-style: italic; text-decoration: underline; cursor: pointer">Excluir</button>
+</div>
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<h3 style="margin: 0; font-size: 20px; line-height: 28px; font-weight: 700; color: {{c.tinta}}">{{card.nome}}</h3>
+<div style="font-size: 14px; line-height: 20px; font-style: italic; color: {{c.desb}}">{{card.meta}}</div>
+</div>
+<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border-top: 1px solid {{c.linha}}">
+<sc-for list="{{card.unidades}}" as="u" hint-placeholder-count="3">
+<li style="border-bottom: 1px solid {{c.linha}}">
+<button type="button" onClick="{{u.toggle}}" disabled="{{card.travado}}" aria-pressed="{{u.pressed}}" style="width: 100%; min-height: 44px; display: flex; align-items: center; gap: 12px; padding: 0 4px; background: transparent; border: none; text-align: left; color: {{c.tinta}}; cursor: {{card.cursor}}">
+<span style="flex-shrink: 0; width: 18px; height: 18px; box-sizing: border-box; border-radius: 9999px; border: 2px solid {{u.selo}}; background: {{u.fundoSelo}}; display: inline-flex; align-items: center; justify-content: center">
+<sc-if value="{{u.obtido}}" hint-placeholder-val="{{ false }}">
+<svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true"><path d="M1.8 5.2l2 2 4.4-4.6" fill="none" stroke="{{c.sobre}}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+</sc-if>
+</span>
+<span style="flex-grow: 1; font-size: 17px; line-height: 28px; text-decoration: {{u.deco}}; color: {{u.corNome}}">{{u.nome}}</span>
+<span style="font-size: 14px; line-height: 20px; font-style: italic; color: {{c.desb}}">{{u.anot}}</span>
+</button>
+</li>
+</sc-for>
+</ul>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+<span style="font-size: 14px; line-height: 20px; font-style: italic; color: {{c.desb}}">{{card.progresso}}</span>
+<sc-if value="{{card.podeFinalizar}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{card.finalizar}}" style="min-height: 44px; padding: 0 20px; background: {{c.sangue}}; color: {{c.sobre}}; border: none; border-radius: 3px; font-size: 17px; font-weight: 700; cursor: pointer">Finalizado</button>
+</sc-if>
+<sc-if value="{{card.finalizado}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{card.reverter}}" style="min-height: 44px; padding: 0 20px; background: transparent; color: {{c.tinta}}; border: 1px solid {{c.linha}}; border-radius: 3px; font-size: 17px; cursor: pointer">Reverter</button>
+</sc-if>
+</div>
+</article>
+</sc-for>
+</div>
+</section>
+</sc-for>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"tema":{"editor":"enum","options":["pergaminho","fogueira"],"default":"pergaminho"},"$preview":{"width":1280,"height":1760}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const agora = Date.now(), min = 60000, hora = 60 * min, dia = 24 * hora;
+    const un = (nome, origem, lista) => lista.map((obtido) => ({ nome, origem, obtido }));
+    this.state = {
+      objs: [
+        { id: 'o1', nome: 'Bolsa do Caçador Lendário', finalidade: 'Bolsa', criadoEm: agora - 3 * dia, alteradoEm: agora - 2 * hora, finalizado: false,
+          unidades: [].concat(un('Pele de Cervo', 'Animal', [true]), un('Carcaça de Lobo', 'Animal', [false]), un('Pena de Ganso', 'Animal', [true, false, false])) },
+        { id: 'o2', nome: 'Tônico de Ginseng', finalidade: 'Missão', criadoEm: agora - 2 * dia, alteradoEm: agora - 25 * min, finalizado: false,
+          unidades: un('Ginseng Americano', 'Planta', [true, false]) },
+        { id: 'o3', nome: 'Estojo de Munição', finalidade: 'Bolsa', criadoEm: agora - 4 * dia, alteradoEm: agora - 5 * hora, finalizado: false,
+          unidades: un('Pele de Coelho', 'Animal', [true, true]) },
+        { id: 'o4', nome: 'Melhoria da Tenda', finalidade: 'Acampamento', criadoEm: agora - 1 * dia, alteradoEm: null, finalizado: false,
+          unidades: [].concat(un('Carcaça de Carneiro', 'Animal', [false]), un('Dente de Ouro', 'Objeto', [false, false, false])) },
+        { id: 'o5', nome: 'Encomenda do Curtidor', finalidade: 'Missão', criadoEm: agora - 6 * dia, alteradoEm: agora - 4 * dia, finalizado: true,
+          unidades: [].concat(un('Pele de Raposa', 'Animal', [true]), un('Pena de Garça', 'Animal', [true])) }
+      ]
+    };
+  }
+
+  cores() {
+    const temas = {
+      pergaminho: { papel: '#efe4c9', marcado: '#e2d3ae', linha: '#8a7350', tinta: '#2a1c10', desb: '#5c4833', sangue: '#8e1b17', sobre: '#f7eedb',
+        Aguardando: '#3f3527', Buscando: '#7a4d06', Obtido: '#35521f', Finalizado: '#6e6457' },
+      fogueira: { papel: '#17110b', marcado: '#241a11', linha: '#806b4f', tinta: '#ecdfc3', desb: '#b9a686', sangue: '#e2604f', sobre: '#17110b',
+        Aguardando: '#b2a38a', Buscando: '#e0a948', Obtido: '#97b86c', Finalizado: '#8f8474' }
+    };
+    return temas[this.props.tema] || temas.pergaminho;
+  }
+
+  status(o) {
+    if (o.finalizado) return 'Finalizado';
+    const total = o.unidades.length, obtidas = o.unidades.filter((u) => u.obtido).length;
+    if (total > 0 && obtidas === total) return 'Obtido';
+    if (obtidas > 0) return 'Buscando';
+    return 'Aguardando';
+  }
+
+  relativo(t) {
+    const m = Math.round((Date.now() - t) / 60000);
+    if (m < 1) return 'agora mesmo';
+    if (m < 60) return 'há ' + m + ' min';
+    const h = Math.round(m / 60);
+    if (h < 24) return h === 1 ? 'há 1 hora' : 'há ' + h + ' horas';
+    const d = Math.round(h / 24);
+    return d === 1 ? 'há 1 dia' : 'há ' + d + ' dias';
+  }
+
+  atualizar(id, fn) {
+    this.setState({ objs: this.state.objs.map((o) => (o.id === id ? Object.assign({}, fn(o), { alteradoEm: Date.now() }) : o)) });
+  }
+
+  renderVals() {
+    const c = this.cores();
+    const ordem = ['Buscando', 'Obtido', 'Aguardando', 'Finalizado'];
+    const ref = (o) => o.alteradoEm || o.criadoEm;
+    const grupos = ordem.map((nome) => {
+      const doGrupo = this.state.objs.filter((o) => this.status(o) === nome).sort((a, b) => ref(b) - ref(a));
+      const cards = doGrupo.map((o) => {
+        const fin = o.finalizado;
+        const obtidas = o.unidades.filter((u) => u.obtido).length;
+        const totais = {}, posicao = {};
+        o.unidades.forEach((u) => { totais[u.nome] = (totais[u.nome] || 0) + 1; });
+        const unidades = o.unidades.map((u, i) => {
+          posicao[u.nome] = (posicao[u.nome] || 0) + 1;
+          const extra = totais[u.nome] > 1 ? ', ' + posicao[u.nome] + ' de ' + totais[u.nome] : '';
+          return {
+            nome: u.nome,
+            anot: u.origem + extra,
+            obtido: u.obtido,
+            pressed: u.obtido ? 'true' : 'false',
+            selo: u.obtido ? c.sangue : c.linha,
+            fundoSelo: u.obtido ? c.sangue : 'transparent',
+            deco: u.obtido ? 'line-through' : 'none',
+            corNome: u.obtido ? c.desb : c.tinta,
+            toggle: () => {
+              if (fin) return;
+              this.atualizar(o.id, (x) => Object.assign({}, x, { unidades: x.unidades.map((y, j) => (j === i ? Object.assign({}, y, { obtido: !y.obtido }) : y)) }));
+            }
+          };
+        });
+        const quando = o.alteradoEm ? 'alterado ' + this.relativo(o.alteradoEm) : 'criado ' + this.relativo(o.criadoEm);
+        return {
+          nome: o.nome,
+          status: nome,
+          cor: c[nome],
+          bg: fin ? 'transparent' : c.marcado,
+          borda: fin ? '1px solid ' + c.linha : '1px solid transparent',
+          meta: o.finalidade + ', ' + quando,
+          progresso: obtidas + ' de ' + o.unidades.length + ' obtidas',
+          unidades,
+          travado: fin,
+          cursor: fin ? 'default' : 'pointer',
+          finalizado: fin,
+          podeFinalizar: nome === 'Obtido',
+          finalizar: () => this.atualizar(o.id, (x) => Object.assign({}, x, { finalizado: true, finalizadoEm: Date.now() })),
+          reverter: () => this.atualizar(o.id, (x) => Object.assign({}, x, { finalizado: false, finalizadoEm: null }))
+        };
+      });
+      const n = cards.length;
+      return { nome, cor: c[nome], contagem: n === 1 ? '1 objetivo' : n + ' objetivos', cards };
+    }).filter((g) => g.cards.length > 0);
+    return { c, grupos };
+  }
+}
+</script>
+</body>
+</html>
