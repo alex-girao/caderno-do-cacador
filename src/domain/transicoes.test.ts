@@ -183,6 +183,19 @@ describe('reverter', () => {
     expect(calcularStatus(aplicar(finalizado, patch))).toBe('Obtido')
   })
 
+  it('em objetivo finalizado sem itens, vai para Aguardando e passa a exibir o aviso (RN13)', () => {
+    const finalizadoVazio: EstadoObjetivo = { finalizado: true, unidades: [] }
+    expect(resumirObjetivo(finalizadoVazio).avisoSemItens).toBe(false)
+    const patch = reverter(finalizadoVazio)
+    expect(patch).toEqual({ finalizado: false, finalizadoEm: null })
+    expect(resumirObjetivo(aplicar(finalizadoVazio, patch))).toMatchObject({
+      status: 'Aguardando',
+      semItens: true,
+      avisoSemItens: true,
+      podeFinalizar: false,
+    })
+  })
+
   it('recusa reverter objetivo não finalizado', () => {
     expect(() => reverter({ finalizado: false, unidades: [unidade('a', 'pele', true)] })).toThrow(
       ErroDeDominio,
