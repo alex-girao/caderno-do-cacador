@@ -60,9 +60,12 @@ O status é **derivado**, calculado no frontend na seguinte ordem de precedênci
 | Condição | Status |
 |---|---|
 | `finalizado = true` | **Finalizado** |
+| Nenhuma unidade (objetivo "sem itens") | **Aguardando** |
 | Todas as unidades obtidas | **Obtido** |
 | Pelo menos uma unidade obtida | **Buscando** |
 | Nenhuma unidade obtida | **Aguardando** |
+
+**Objetivo sem itens.** Um objetivo só fica sem unidades quando a exclusão em cascata de um item do catálogo (RN21) remove todas as suas unidades. Nesse caso ele fica **Aguardando** (e não Obtido, ainda que "todas as unidades obtidas" seja verdadeiro para uma lista vazia), recebe a sinalização `semItens` e **não pode ser finalizado**. O cartão exibe o aviso "Sem itens", orientando o usuário a editar o objetivo para adicionar itens ou a excluí-lo.
 
 ### 6.2 Regras de transição
 
