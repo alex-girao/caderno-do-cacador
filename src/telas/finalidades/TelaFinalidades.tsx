@@ -1,10 +1,20 @@
-import { CabecalhoTela } from '../../ui/CabecalhoTela.tsx'
+import { finalidades } from '../../dados/finalidades.ts'
+import { useFinalidades } from '../../dados/hooks.ts'
+import { TelaCadastroPorNome, type ConfigCadastroPorNome } from '../cadastroPorNome/TelaCadastroPorNome.tsx'
+
+const config: ConfigCadastroPorNome = {
+  tipo: 'finalidade',
+  titulo: 'Finalidades',
+  singular: 'finalidade',
+  plural: 'finalidades',
+  tituloNovo: 'Nova finalidade',
+  tituloEditar: 'Editar finalidade',
+  exemplo: 'Bolsa',
+  vazio: 'Nenhuma finalidade no caderno. Cadastre a primeira, como Bolsa, Acampamento ou Missão.',
+  useLista: useFinalidades,
+  dados: finalidades,
+}
 
 export function TelaFinalidades() {
-  return (
-    <>
-      <CabecalhoTela titulo="Finalidades" />
-      <p className="t-detalhe">O cadastro de finalidades chega em seguida.</p>
-    </>
-  )
+  return <TelaCadastroPorNome config={config} />
 }

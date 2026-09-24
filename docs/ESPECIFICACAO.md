@@ -43,6 +43,7 @@ Todos os cadastros pertencem ao usuário autenticado. Toda edição é feita em 
 - **RN02 — Origem:** criar, listar, editar e excluir. Campo obrigatório: nome.
 - **RN03 — Item:** criar, listar, editar e excluir. Campos obrigatórios: nome e origem.
 - **RN04 — Objetivo:** criar, listar, editar e excluir. Campos obrigatórios: nome, finalidade e pelo menos um item.
+- **RN27 — Nomes únicos:** dentro de cada cadastro de Finalidade, Origem e Item, o nome não pode repetir o de outro registro. A comparação ignora maiúsculas e minúsculas, acentos, espaços nas pontas e espaços repetidos; o nome é salvo sem espaços nas pontas. Na edição, o próprio registro não conta, o que permite corrigir apenas a caixa ou a acentuação. A regra vale dentro de cada coleção: uma Origem e uma Finalidade podem ter o mesmo nome. A mensagem nomeia o registro existente, por exemplo: "Já existe uma origem chamada Animal." A validação roda no cliente, sobre a lista mantida pelo `onSnapshot`.
 
 ## 5. Montagem do objetivo
 

@@ -1,0 +1,19 @@
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.controle {
+  height: 44px;
+  padding: 0 12px;
+  background: var(--papel-marcado);
+  border: 1px solid var(--linha);
+  border-radius: var(--raio-leve);
+  color: var(--tinta);
+  font-size: 17px;
+}
+
+.controle[aria-invalid='true'] {
+  border-color: var(--sangue);
+}

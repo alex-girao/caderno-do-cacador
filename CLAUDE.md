@@ -8,7 +8,7 @@ Checklist de coleta de recursos inspirado na estética de Red Dead Redemption 2.
 
 **Leia antes de qualquer implementação:**
 
-- `docs/ESPECIFICACAO.md`: regras de negócio numeradas (RN01 a RN26) e o modelo de dados do Firestore (seção 12). É a fonte da verdade do comportamento.
+- `docs/ESPECIFICACAO.md`: regras de negócio numeradas (RN01 a RN27) e o modelo de dados do Firestore (seção 12). É a fonte da verdade do comportamento.
 - `docs/design/DESIGN-SYSTEM.md`: guia visual, voz da interface e regras de uso dos tokens.
 - `docs/design/tokens.json`: cores (temas `pergaminho` e `fogueira`), tipografia, espaçamento, raios e sombras.
 - `docs/design/telas/*.dc.html`: mockups de referência das telas.

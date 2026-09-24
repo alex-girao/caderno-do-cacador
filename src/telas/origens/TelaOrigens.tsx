@@ -1,10 +1,20 @@
-import { CabecalhoTela } from '../../ui/CabecalhoTela.tsx'
+import { useOrigens } from '../../dados/hooks.ts'
+import { origens } from '../../dados/origens.ts'
+import { TelaCadastroPorNome, type ConfigCadastroPorNome } from '../cadastroPorNome/TelaCadastroPorNome.tsx'
+
+const config: ConfigCadastroPorNome = {
+  tipo: 'origem',
+  titulo: 'Origens',
+  singular: 'origem',
+  plural: 'origens',
+  tituloNovo: 'Nova origem',
+  tituloEditar: 'Editar origem',
+  exemplo: 'Animal',
+  vazio: 'Nenhuma origem no caderno. Cadastre a primeira, como Animal ou Objeto.',
+  useLista: useOrigens,
+  dados: origens,
+}
 
 export function TelaOrigens() {
-  return (
-    <>
-      <CabecalhoTela titulo="Origens" />
-      <p className="t-detalhe">O cadastro de origens chega em seguida.</p>
-    </>
-  )
+  return <TelaCadastroPorNome config={config} />
 }

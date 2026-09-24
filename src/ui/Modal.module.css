@@ -1,0 +1,66 @@
+.modal {
+  width: min(560px, calc(100vw - 2 * var(--space-4)));
+  max-height: calc(100vh - 2 * var(--space-4));
+  margin: auto;
+  padding: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: var(--papel);
+  color: var(--tinta);
+  border: none;
+  border-radius: var(--raio-papel);
+  box-shadow: var(--sombra-modal);
+}
+
+/* Fundo escurecido das telas de referência (tinta a 60%). */
+.modal::backdrop {
+  background: #2a1c1099;
+}
+
+:global([data-theme='fogueira']) .modal::backdrop {
+  background: #000000b3;
+}
+
+.cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--linha);
+}
+
+.fechar {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--raio-leve);
+  color: var(--tinta-desbotada);
+  cursor: pointer;
+}
+
+.corpo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.rodape {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+@media (max-width: 640px) {
+  .modal {
+    padding: var(--space-4);
+  }
+}

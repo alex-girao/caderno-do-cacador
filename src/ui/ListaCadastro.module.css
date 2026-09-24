@@ -1,0 +1,29 @@
+.lista {
+  max-width: 720px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--linha);
+}
+
+.linha {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-height: 52px;
+  border-bottom: 1px solid var(--linha);
+}
+
+.nome {
+  flex-grow: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--space-2);
+  min-width: 0;
+}
+
+.acoes {
+  display: flex;
+  gap: var(--space-1);
+}
