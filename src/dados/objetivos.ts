@@ -1,6 +1,7 @@
 import { getDocs, query, where } from 'firebase/firestore'
 import type { DocumentSnapshot } from 'firebase/firestore'
 import type { Objetivo, Unidade } from '../domain/tipos.ts'
+import { assinarConsulta, type AoFalhar, type AoReceber } from './assinatura.ts'
 import { colecaoDoUsuario } from './caminhos.ts'
 import { lerDados, lerRegistro, paraInstante, paraTexto } from './conversao.ts'
 
@@ -29,6 +30,11 @@ async function buscarOnde(uid: string, campo: string, operador: '==' | 'array-co
 }
 
 export const objetivos = {
+  /** Coleção inteira em tempo real; status e ordem são calculados no cliente (seção 12.6). */
+  assinar(uid: string, aoReceber: AoReceber<Objetivo>, aoFalhar: AoFalhar) {
+    return assinarConsulta(colecaoDoUsuario(uid, 'objetivos'), converterObjetivo, aoReceber, aoFalhar)
+  },
+
   /** Objetivos com a finalidade (RN22, seção 12.5). */
   buscarPorFinalidade: (uid: string, finalidadeId: string) =>
     buscarOnde(uid, 'finalidadeId', '==', finalidadeId),

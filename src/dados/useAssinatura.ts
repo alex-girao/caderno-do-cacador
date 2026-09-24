@@ -27,3 +27,10 @@ export function useAssinatura<T>(assinar: Assinar<T>): EstadoLista<T> {
 
   return lista
 }
+
+const NENHUM: never[] = []
+
+/** Registros da lista pronta, ou uma lista vazia estável enquanto carrega ou falha. */
+export function registrosDe<T>(lista: EstadoLista<T>): T[] {
+  return lista.estado === 'pronta' ? lista.registros : NENHUM
+}
