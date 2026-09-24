@@ -8,6 +8,7 @@ import {
   calcularItemIds,
   criarUnidades,
   finalizar,
+  marcarUnidade,
   montarNovoObjetivo,
   reverter,
 } from './transicoes.ts'
@@ -146,6 +147,34 @@ describe('alternarUnidade', () => {
 
   it('recusa unidade inexistente', () => {
     expect(() => alternarUnidade(aguardando, 'x')).toThrow(ErroDeDominio)
+  })
+})
+
+describe('marcarUnidade', () => {
+  const buscando: EstadoObjetivo = {
+    finalizado: false,
+    unidades: [unidade('a', 'pele', true), unidade('b', 'pena', false)],
+  }
+
+  it('define o valor desejado, sem inverter', () => {
+    expect(marcarUnidade(buscando, 'b', true).unidades[1].obtido).toBe(true)
+    expect(marcarUnidade(buscando, 'a', true).unidades[0].obtido).toBe(true)
+  })
+
+  it('é idempotente: repetir a mesma marcação não a desfaz', () => {
+    const uma = aplicar(buscando, marcarUnidade(buscando, 'b', true))
+    const duas = aplicar(uma, marcarUnidade(uma, 'b', true))
+    expect(duas.unidades).toEqual(uma.unidades)
+    expect(calcularStatus(duas)).toBe('Obtido')
+  })
+
+  it('desmarca com obtido = false (RN14)', () => {
+    expect(calcularStatus(aplicar(buscando, marcarUnidade(buscando, 'a', false)))).toBe('Aguardando')
+  })
+
+  it('recusa em objetivo finalizado e unidade inexistente (RN14)', () => {
+    expect(() => marcarUnidade({ ...buscando, finalizado: true }, 'a', false)).toThrow(ErroDeDominio)
+    expect(() => marcarUnidade(buscando, 'x', true)).toThrow(ErroDeDominio)
   })
 })
 

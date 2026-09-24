@@ -8,6 +8,7 @@ import { CabecalhoTela } from '../../ui/CabecalhoTela.tsx'
 import { useAgora } from '../../ui/useAgora.ts'
 import { CartaoObjetivo } from './CartaoObjetivo.tsx'
 import { GrupoStatus } from './GrupoStatus.tsx'
+import { useAcoesObjetivo } from './useAcoesObjetivo.ts'
 
 export function TelaObjetivos() {
   const listaObjetivos = useObjetivos()
@@ -29,7 +30,12 @@ export function TelaObjetivos() {
     )
   }, [itens, origens])
   const nomeFinalidade = useMemo(() => new Map(finalidades.map((f) => [f.id, f.nome])), [finalidades])
-  const grupos = useMemo(() => agruparPorStatus(objetivos).filter((g) => g.objetivos.length > 0), [objetivos])
+  const { exibidos, marcar, finalizar, reverter } = useAcoesObjetivo(objetivos)
+  const acoes = useMemo(
+    () => ({ aoAlternar: marcar, aoFinalizar: finalizar, aoReverter: reverter }),
+    [marcar, finalizar, reverter],
+  )
+  const grupos = useMemo(() => agruparPorStatus(exibidos).filter((g) => g.objetivos.length > 0), [exibidos])
 
   const conteudo = () => {
     if (listas.some((l) => l.estado === 'erro')) {
@@ -52,6 +58,7 @@ export function TelaObjetivos() {
             finalidade={nomeFinalidade.get(objetivo.finalidadeId) ?? 'Finalidade removida'}
             catalogo={catalogo}
             agora={agora}
+            acoes={acoes}
           />
         ))}
       </GrupoStatus>

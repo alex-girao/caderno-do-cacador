@@ -1,8 +1,10 @@
-import { getDocs, query, where } from 'firebase/firestore'
+import { getDocs, query, runTransaction, serverTimestamp, where } from 'firebase/firestore'
 import type { DocumentSnapshot } from 'firebase/firestore'
-import type { Objetivo, Unidade } from '../domain/tipos.ts'
+import { finalizar, marcarUnidade, reverter, type PatchFinalizacao, type PatchUnidades } from '../domain/transicoes.ts'
+import { AGORA, ErroDeDominio, type Objetivo, type Unidade } from '../domain/tipos.ts'
+import { db } from '../firebase/app.ts'
 import { assinarConsulta, type AoFalhar, type AoReceber } from './assinatura.ts'
-import { colecaoDoUsuario } from './caminhos.ts'
+import { colecaoDoUsuario, documentoDoUsuario } from './caminhos.ts'
 import { lerDados, lerRegistro, paraInstante, paraTexto } from './conversao.ts'
 
 function paraUnidades(valor: unknown): Unidade[] {
@@ -24,6 +26,29 @@ export function converterObjetivo(snapshot: DocumentSnapshot): Objetivo {
   }
 }
 
+type Patch = Partial<PatchUnidades & PatchFinalizacao>
+
+/** Troca a marca AGORA do domínio por serverTimestamp() (seção 12.7). */
+export function paraGravacao(patch: Patch) {
+  const { finalizadoEm, ...resto } = patch
+  if (finalizadoEm === undefined) return resto
+  return { ...resto, finalizadoEm: finalizadoEm === AGORA ? serverTimestamp() : null }
+}
+
+/**
+ * Relê o objetivo numa transação, calcula o patch pelo domínio a partir do
+ * estado atual e grava junto com alteradoEm (seção 12.3, RN18).
+ */
+function alterarEmTransacao(uid: string, id: string, calcular: (objetivo: Objetivo) => Patch) {
+  return runTransaction(db, async (transacao) => {
+    const ref = documentoDoUsuario(uid, 'objetivos', id)
+    const snapshot = await transacao.get(ref)
+    if (!snapshot.exists()) throw new ErroDeDominio('Este objetivo foi excluído.')
+    const patch = calcular(converterObjetivo(snapshot))
+    transacao.update(ref, { ...paraGravacao(patch), alteradoEm: serverTimestamp() })
+  })
+}
+
 async function buscarOnde(uid: string, campo: string, operador: '==' | 'array-contains', valor: string) {
   const resultado = await getDocs(query(colecaoDoUsuario(uid, 'objetivos'), where(campo, operador, valor)))
   return resultado.docs.map(converterObjetivo)
@@ -34,6 +59,13 @@ export const objetivos = {
   assinar(uid: string, aoReceber: AoReceber<Objetivo>, aoFalhar: AoFalhar) {
     return assinarConsulta(colecaoDoUsuario(uid, 'objetivos'), converterObjetivo, aoReceber, aoFalhar)
   },
+
+  marcarUnidade: (uid: string, id: string, unidadeId: string, obtido: boolean) =>
+    alterarEmTransacao(uid, id, (o) => marcarUnidade(o, unidadeId, obtido)),
+
+  finalizar: (uid: string, id: string) => alterarEmTransacao(uid, id, finalizar),
+
+  reverter: (uid: string, id: string) => alterarEmTransacao(uid, id, reverter),
 
   /** Objetivos com a finalidade (RN22, seção 12.5). */
   buscarPorFinalidade: (uid: string, finalidadeId: string) =>

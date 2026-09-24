@@ -56,18 +56,26 @@ export function montarNovoObjetivo(
   return { unidades, itemIds: calcularItemIds(unidades), finalizado: false, finalizadoEm: null }
 }
 
-/** Marca ou desmarca uma unidade, só fora de objetivos finalizados (RN10, RN11, RN14). */
-export function alternarUnidade(objetivo: EstadoObjetivo, unidadeId: string): PatchUnidades {
+/**
+ * Define se a unidade foi obtida, só fora de objetivos finalizados
+ * (RN10, RN11, RN14). Recebe o valor desejado, e não uma inversão, para
+ * que cliques repetidos e transações reexecutadas não se anulem.
+ */
+export function marcarUnidade(objetivo: EstadoObjetivo, unidadeId: string, obtido: boolean): PatchUnidades {
   if (objetivo.finalizado) {
     throw new ErroDeDominio('Objetivo finalizado. Reverta antes de alterar as unidades.')
   }
   if (!objetivo.unidades.some((u) => u.id === unidadeId)) {
     throw new ErroDeDominio('Unidade não encontrada no objetivo.')
   }
-  const unidades = objetivo.unidades.map((u) =>
-    u.id === unidadeId ? { ...u, obtido: !u.obtido } : u,
-  )
+  const unidades = objetivo.unidades.map((u) => (u.id === unidadeId ? { ...u, obtido } : u))
   return { unidades, itemIds: calcularItemIds(unidades) }
+}
+
+/** Marca ou desmarca uma unidade, invertendo o estado atual (RN14). */
+export function alternarUnidade(objetivo: EstadoObjetivo, unidadeId: string): PatchUnidades {
+  const atual = objetivo.unidades.find((u) => u.id === unidadeId)
+  return marcarUnidade(objetivo, unidadeId, !atual?.obtido)
 }
 
 /** Finalizado: só a partir de Obtido, o que exclui objetivos sem itens (RN11, RN12). */
