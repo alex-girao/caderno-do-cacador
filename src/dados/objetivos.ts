@@ -1,7 +1,12 @@
 import { doc, getDocs, query, runTransaction, serverTimestamp, where } from 'firebase/firestore'
+import type { Transaction } from 'firebase/firestore'
 import type { DocumentSnapshot } from 'firebase/firestore'
 import { aparaNome } from '../domain/cadastros.ts'
-import { montarPatchEdicao, type FormularioObjetivo } from '../domain/edicaoObjetivo.ts'
+import {
+  montarPatchEdicao,
+  ReferenciasInexistentes,
+  type FormularioObjetivo,
+} from '../domain/edicaoObjetivo.ts'
 import {
   finalizar,
   marcarUnidade,
@@ -58,6 +63,26 @@ function alterarEmTransacao(uid: string, id: string, calcular: (objetivo: Objeti
   })
 }
 
+/**
+ * Relê, dentro da transação, a finalidade e os itens das unidades novas, e
+ * aborta se algum não existir (seção 12.5). Deve rodar antes das escritas.
+ */
+async function verificarReferencias(
+  transacao: Transaction,
+  uid: string,
+  finalidadeId: string,
+  itemIds: readonly string[],
+) {
+  const [finalidade, ...itens] = await Promise.all([
+    transacao.get(documentoDoUsuario(uid, 'finalidades', finalidadeId)),
+    ...itemIds.map((id) => transacao.get(documentoDoUsuario(uid, 'itens', id))),
+  ])
+  const faltando = itemIds.filter((_, i) => !itens[i].exists())
+  if (faltando.length > 0 || !finalidade.exists()) {
+    throw new ReferenciasInexistentes(faltando, !finalidade.exists())
+  }
+}
+
 async function buscarOnde(uid: string, campo: string, operador: '==' | 'array-contains', valor: string) {
   const resultado = await getDocs(query(colecaoDoUsuario(uid, 'objetivos'), where(campo, operador, valor)))
   return resultado.docs.map(converterObjetivo)
@@ -74,6 +99,7 @@ export const objetivos = {
     const dados = montarNovoObjetivo(linhas)
     const ref = doc(colecaoDoUsuario(uid, 'objetivos'))
     await runTransaction(db, async (transacao) => {
+      await verificarReferencias(transacao, uid, finalidadeId, dados.itemIds)
       transacao.set(ref, {
         nome: aparaNome(nome),
         finalidadeId,
@@ -85,12 +111,24 @@ export const objetivos = {
     return ref.id
   },
 
-  /** Edita dados e itens; as unidades são reconciliadas sobre o estado relido (RN08, RN15, RN20). */
+  /**
+   * Edita dados e itens. As unidades são reconciliadas sobre o objetivo
+   * relido (RN08, RN15, RN20), e os itens das unidades novas são relidos
+   * antes de gravar.
+   */
   editar: (uid: string, id: string, { nome, finalidadeId, linhas }: FormularioObjetivo) =>
-    alterarEmTransacao(uid, id, (objetivo) => {
-      const { unidades, itemIds, finalizado, finalizadoEm } = montarPatchEdicao(objetivo, linhas)
-      const patch: Patch = { nome: aparaNome(nome), finalidadeId, unidades, itemIds }
-      return finalizado === undefined ? patch : { ...patch, finalizado, finalizadoEm }
+    runTransaction(db, async (transacao) => {
+      const ref = documentoDoUsuario(uid, 'objetivos', id)
+      const snapshot = await transacao.get(ref)
+      if (!snapshot.exists()) throw new ErroDeDominio('Este objetivo foi excluído.')
+      const { itensNovos, ...patch } = montarPatchEdicao(converterObjetivo(snapshot), linhas)
+      await verificarReferencias(transacao, uid, finalidadeId, itensNovos)
+      transacao.update(ref, {
+        ...paraGravacao(patch),
+        nome: aparaNome(nome),
+        finalidadeId,
+        alteradoEm: serverTimestamp(),
+      })
     }),
 
   marcarUnidade: (uid: string, id: string, unidadeId: string, obtido: boolean) =>

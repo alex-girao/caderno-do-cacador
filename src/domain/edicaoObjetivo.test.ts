@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest'
 import {
   linhasDoObjetivo,
   MENSAGEM_ULTIMA_UNIDADE,
+  mensagemReferenciasInexistentes,
   montarPatchEdicao,
+  ReferenciasInexistentes,
   reconciliarUnidades,
   textoObtidasDaLinha,
   validarFormularioObjetivo,
@@ -182,6 +184,83 @@ describe('montarPatchEdicao', () => {
     const patch = montarPatchEdicao(vazio, [{ itemId: 'pena', quantidade: 1 }], sequencial())
     expect(patch).toMatchObject({ finalizado: false, finalizadoEm: null, itensNovos: ['pena'] })
     expect(calcularStatus(aplicar(vazio, patch))).toBe('Aguardando')
+  })
+})
+
+describe('unidades de item removido', () => {
+  // "sumido" não existe mais no catálogo.
+  const comOrfas: EstadoObjetivo = {
+    finalizado: false,
+    unidades: [u('1', 'sumido', true), u('2', 'sumido'), u('3', 'pena')],
+  }
+
+  it('podem ser retiradas na edição sem exigir a releitura do item', () => {
+    const patch = montarPatchEdicao(comOrfas, [{ itemId: 'pena', quantidade: 1 }])
+    expect(ids(patch.unidades)).toEqual(['3'])
+    expect(patch.itemIds).toEqual(['pena'])
+    expect(patch.itensNovos).toEqual([])
+  })
+
+  it('podem ser reduzidas, e mantidas, sem virar item novo', () => {
+    const patch = montarPatchEdicao(comOrfas, [
+      { itemId: 'sumido', quantidade: 1 },
+      { itemId: 'pena', quantidade: 1 },
+    ])
+    expect(ids(patch.unidades)).toEqual(['1', '3'])
+    expect(patch.itensNovos).toEqual([])
+  })
+
+  it('aumentar um item removido o lista como novo, para a transação recusar', () => {
+    const patch = montarPatchEdicao(
+      comOrfas,
+      [
+        { itemId: 'sumido', quantidade: 3 },
+        { itemId: 'pena', quantidade: 1 },
+      ],
+      sequencial(),
+    )
+    expect(patch.itensNovos).toEqual(['sumido'])
+  })
+})
+
+describe('mensagemReferenciasInexistentes', () => {
+  const nomes = new Map([
+    ['pena', 'Pena de Ganso'],
+    ['dente', 'Dente de Ouro'],
+  ])
+
+  it('nomeia um item excluído', () => {
+    expect(mensagemReferenciasInexistentes(new ReferenciasInexistentes(['pena'], false), nomes)).toBe(
+      'Pena de Ganso foi excluído do catálogo enquanto você editava. Revise os itens e salve de novo.',
+    )
+  })
+
+  it('nomeia vários itens excluídos', () => {
+    expect(mensagemReferenciasInexistentes(new ReferenciasInexistentes(['pena', 'dente'], false), nomes)).toBe(
+      'Pena de Ganso e Dente de Ouro foram excluídos do catálogo enquanto você editava. Revise os itens e salve de novo.',
+    )
+  })
+
+  it('conta os itens quando algum nome é desconhecido', () => {
+    expect(mensagemReferenciasInexistentes(new ReferenciasInexistentes(['x'], false), nomes)).toBe(
+      'Um item foi excluído do catálogo enquanto você editava. Revise os itens e salve de novo.',
+    )
+    expect(mensagemReferenciasInexistentes(new ReferenciasInexistentes(['pena', 'x'], false), nomes)).toBe(
+      '2 itens foram excluídos do catálogo enquanto você editava. Revise os itens e salve de novo.',
+    )
+  })
+
+  it('avisa sobre a finalidade excluída, sozinha ou com itens', () => {
+    expect(mensagemReferenciasInexistentes(new ReferenciasInexistentes([], true), nomes)).toBe(
+      'A finalidade escolhida foi excluída enquanto você editava. Escolha outra e salve de novo.',
+    )
+    expect(mensagemReferenciasInexistentes(new ReferenciasInexistentes(['pena'], true), nomes)).toContain(
+      'Pena de Ganso foi excluído do catálogo',
+    )
+  })
+
+  it('é um ErroDeDominio', () => {
+    expect(new ReferenciasInexistentes(['pena'], false)).toBeInstanceOf(ErroDeDominio)
   })
 })
 

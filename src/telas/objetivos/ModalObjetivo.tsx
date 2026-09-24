@@ -1,11 +1,17 @@
-import { useMemo, useState, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useUid } from '../../app/SessaoContext.tsx'
 import type { RegistroPorNome } from '../../dados/cadastroPorNome.ts'
 import { objetivos as dadosObjetivos } from '../../dados/objetivos.ts'
 import type { ItemDoCatalogo } from '../../domain/apresentacao.ts'
 import { ordenarPorNome } from '../../domain/cadastros.ts'
-import { linhasDoObjetivo, validarFormularioObjetivo, type LinhaItem } from '../../domain/edicaoObjetivo.ts'
-import type { Item, Objetivo } from '../../domain/tipos.ts'
+import {
+  linhasDoObjetivo,
+  mensagemReferenciasInexistentes,
+  ReferenciasInexistentes,
+  validarFormularioObjetivo,
+  type LinhaItem,
+} from '../../domain/edicaoObjetivo.ts'
+import { ErroDeDominio, type Item, type Objetivo } from '../../domain/tipos.ts'
 import { Campo, Selecao } from '../../ui/Campo.tsx'
 import { ModalFormulario } from '../../ui/ModalFormulario.tsx'
 import { ItensDoObjetivo } from './ItensDoObjetivo.tsx'
@@ -37,6 +43,13 @@ export function ModalObjetivo({ objetivo, itens, origens, finalidades, catalogo,
   const presentes = useMemo(() => new Set(linhas.map((l) => l.itemId)), [linhas])
   const semFinalidades = finalidades.length === 0
 
+  // Nomes já vistos neste modal: se um item for excluído durante a edição,
+  // a mensagem de erro ainda consegue nomeá-lo.
+  const nomesVistos = useRef(new Map<string, string>())
+  useEffect(() => {
+    for (const [id, item] of catalogo) nomesVistos.current.set(id, item.nome)
+  }, [catalogo])
+
   const mudarQuantidade = (itemId: string, quantidade: number) =>
     setLinhas((atuais) => atuais.map((l) => (l.itemId === itemId ? { ...l, quantidade } : l)))
   const remover = (itemId: string) => setLinhas((atuais) => atuais.filter((l) => l.itemId !== itemId))
@@ -60,8 +73,15 @@ export function ModalObjetivo({ objetivo, itens, origens, finalidades, catalogo,
         })
       }
       salvar={async () => {
-        if (objetivo) await dadosObjetivos.editar(uid, objetivo.id, formulario)
-        else await dadosObjetivos.criar(uid, formulario)
+        try {
+          if (objetivo) await dadosObjetivos.editar(uid, objetivo.id, formulario)
+          else await dadosObjetivos.criar(uid, formulario)
+        } catch (erro) {
+          if (erro instanceof ReferenciasInexistentes) {
+            throw new ErroDeDominio(mensagemReferenciasInexistentes(erro, nomesVistos.current))
+          }
+          throw erro
+        }
       }}
     >
       <div className={estilos.duasColunas}>

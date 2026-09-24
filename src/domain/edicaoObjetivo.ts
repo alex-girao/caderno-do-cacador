@@ -2,6 +2,7 @@
 // para as unidades gravadas (RN05 a RN08, RN15, RN20).
 
 import { aparaNome } from './cadastros.ts'
+import { listarNomes } from './exclusao.ts'
 import { ErroDeDominio, type EstadoObjetivo, type Unidade } from './tipos.ts'
 import {
   calcularItemIds,
@@ -146,4 +147,46 @@ export function validarFormularioObjetivo(
     if (contexto.tinhaUnidades) return MENSAGEM_ULTIMA_UNIDADE
   }
   return null
+}
+
+/**
+ * A transação encontrou referências que não existem mais: itens das
+ * unidades novas ou a finalidade escolhida, excluídos durante a edição.
+ */
+export class ReferenciasInexistentes extends ErroDeDominio {
+  readonly itemIds: string[]
+  readonly finalidade: boolean
+
+  constructor(itemIds: string[], finalidade: boolean) {
+    super('Algum item ou a finalidade foi excluído enquanto você editava.')
+    this.name = 'ReferenciasInexistentes'
+    this.itemIds = itemIds
+    this.finalidade = finalidade
+  }
+}
+
+/** Mensagem ao usuário, com os nomes que ele conhecia dos itens excluídos. */
+export function mensagemReferenciasInexistentes(
+  erro: ReferenciasInexistentes,
+  nomes: ReadonlyMap<string, string>,
+): string {
+  const partes: string[] = []
+  if (erro.itemIds.length > 0) {
+    const conhecidos = erro.itemIds.map((id) => nomes.get(id)).filter((n): n is string => !!n)
+    const quem =
+      conhecidos.length === erro.itemIds.length
+        ? listarNomes(conhecidos)
+        : erro.itemIds.length === 1
+          ? 'Um item'
+          : `${erro.itemIds.length} itens`
+    partes.push(
+      erro.itemIds.length === 1
+        ? `${quem} foi excluído do catálogo enquanto você editava. Revise os itens e salve de novo.`
+        : `${quem} foram excluídos do catálogo enquanto você editava. Revise os itens e salve de novo.`,
+    )
+  }
+  if (erro.finalidade) {
+    partes.push('A finalidade escolhida foi excluída enquanto você editava. Escolha outra e salve de novo.')
+  }
+  return partes.join(' ')
 }
