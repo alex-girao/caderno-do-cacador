@@ -1,0 +1,25 @@
+/* Rye e Libre Caslon Text, SIL Open Font License. Arquivos em public/fonts. */
+
+@font-face {
+  font-family: 'Rye';
+  src: url('/fonts/Rye-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Libre Caslon Text';
+  src: url('/fonts/LibreCaslonText-Variable.woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Libre Caslon Text';
+  src: url('/fonts/LibreCaslonText-Italic-Variable.woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: italic;
+  font-display: swap;
+}

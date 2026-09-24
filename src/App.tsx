@@ -1,7 +1,7 @@
 export default function App() {
   return (
-    <main>
-      <h1>Caderno do Caçador</h1>
+    <main style={{ padding: 'var(--space-8)' }}>
+      <h1 className="t-marca">Caderno do Caçador</h1>
     </main>
   )
 }
