@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { User } from 'firebase/auth'
 import { observarUsuario } from '../firebase/auth.ts'
+import { ProvedorConfirmacao } from '../ui/Confirmacao.tsx'
 import { Casca } from './Casca.tsx'
 import { SessaoContext } from './SessaoContext.tsx'
 import { TelaLogin } from './TelaLogin.tsx'
@@ -24,7 +25,9 @@ export default function App() {
 
   return (
     <SessaoContext.Provider value={sessao.usuario}>
-      <Casca />
+      <ProvedorConfirmacao>
+        <Casca />
+      </ProvedorConfirmacao>
     </SessaoContext.Provider>
   )
 }

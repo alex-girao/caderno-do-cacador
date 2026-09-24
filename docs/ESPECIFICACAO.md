@@ -198,7 +198,7 @@ O Firestore não consulta dentro de arrays de mapas. O campo `itemIds` permite l
 | RN22 — Finalidade em uso | `objetivos` | `where("finalidadeId", "==", finalidadeId)` |
 | RN22 — Origem em uso | `itens` | `where("origemId", "==", origemId)` |
 
-A exclusão em cascata da RN21 usa **batch** para remover o item do catálogo e atualizar todos os objetivos afetados de uma só vez.
+A exclusão em cascata da RN21 usa **transação** (`runTransaction`) para remover o item do catálogo e atualizar todos os objetivos afetados de uma só vez. A consulta por `itemIds` roda antes, porque o SDK web não faz consultas dentro de transações, e alimenta a confirmação. Dentro da transação, cada objetivo é relido e tem as unidades do item removidas a partir do estado atual, com `itemIds` recalculado e `alteradoEm` atualizado (RN18); `finalizado` não é alterado. Uma transação comporta até 500 escritas, o que limita a cascata a 499 objetivos.
 
 ### 12.6 Leitura e ordenação
 

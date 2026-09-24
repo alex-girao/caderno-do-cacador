@@ -9,6 +9,8 @@ const config: ConfigCadastroPorNome = {
   plural: 'finalidades',
   tituloNovo: 'Nova finalidade',
   tituloEditar: 'Editar finalidade',
+  tituloExcluir: 'Excluir finalidade',
+  tituloEmUso: 'Finalidade em uso',
   exemplo: 'Bolsa',
   vazio: 'Nenhuma finalidade no caderno. Cadastre a primeira, como Bolsa, Acampamento ou Missão.',
   useLista: useFinalidades,

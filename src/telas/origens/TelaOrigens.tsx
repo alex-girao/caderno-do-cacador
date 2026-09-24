@@ -9,6 +9,8 @@ const config: ConfigCadastroPorNome = {
   plural: 'origens',
   tituloNovo: 'Nova origem',
   tituloEditar: 'Editar origem',
+  tituloExcluir: 'Excluir origem',
+  tituloEmUso: 'Origem em uso',
   exemplo: 'Animal',
   vazio: 'Nenhuma origem no caderno. Cadastre a primeira, como Animal ou Objeto.',
   useLista: useOrigens,

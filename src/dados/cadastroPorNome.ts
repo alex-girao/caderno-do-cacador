@@ -1,4 +1,4 @@
-import { addDoc, serverTimestamp, updateDoc } from 'firebase/firestore'
+import { addDoc, deleteDoc, serverTimestamp, updateDoc } from 'firebase/firestore'
 import type { DocumentSnapshot } from 'firebase/firestore'
 import { assinarConsulta, type AoFalhar, type AoReceber } from './assinatura.ts'
 import { colecaoDoUsuario, documentoDoUsuario } from './caminhos.ts'
@@ -11,8 +11,14 @@ export interface RegistroPorNome {
   alteradoEm: number | null
 }
 
-/** Operações comuns a coleções cujo único campo é o nome: origens e finalidades. */
-export function criarCadastroPorNome(colecao: 'origens' | 'finalidades') {
+/**
+ * Operações comuns a coleções cujo único campo é o nome: origens e finalidades.
+ * buscarUsos devolve os nomes de quem usa o registro, que bloqueiam a exclusão (RN22).
+ */
+export function criarCadastroPorNome(
+  colecao: 'origens' | 'finalidades',
+  buscarUsos: (uid: string, id: string) => Promise<string[]>,
+) {
   const converter = (snapshot: DocumentSnapshot): RegistroPorNome => {
     const dados = lerDados(snapshot)
     return { ...lerRegistro(snapshot, dados), nome: paraTexto(dados.nome) }
@@ -38,5 +44,14 @@ export function criarCadastroPorNome(colecao: 'origens' | 'finalidades') {
         alteradoEm: serverTimestamp(),
       })
     },
+
+    buscarUsos,
+
+    /** Exclui sem verificar uso: a tela chama buscarUsos antes. */
+    excluir(uid: string, id: string): Promise<void> {
+      return deleteDoc(documentoDoUsuario(uid, colecao, id))
+    },
   }
 }
+
+export type CadastroPorNome = ReturnType<typeof criarCadastroPorNome>
