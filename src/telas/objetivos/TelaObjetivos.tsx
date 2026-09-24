@@ -1,12 +1,17 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
+import { useUid } from '../../app/SessaoContext.tsx'
 import { useFinalidades, useItens, useObjetivos, useOrigens } from '../../dados/hooks.ts'
+import { objetivos as dadosObjetivos } from '../../dados/objetivos.ts'
 import { registrosDe } from '../../dados/useAssinatura.ts'
 import type { ItemDoCatalogo } from '../../domain/apresentacao.ts'
+import { textoConfirmacaoExclusaoObjetivo } from '../../domain/exclusao.ts'
 import { agruparPorStatus } from '../../domain/ordenacao.ts'
 import { quantificar } from '../../domain/texto.ts'
+import type { Objetivo } from '../../domain/tipos.ts'
 import { Botao } from '../../ui/Botao.tsx'
 import { CabecalhoTela } from '../../ui/CabecalhoTela.tsx'
 import { useAgora } from '../../ui/useAgora.ts'
+import { useExclusao } from '../../ui/useExclusao.ts'
 import { CartaoObjetivo } from './CartaoObjetivo.tsx'
 import { GrupoStatus } from './GrupoStatus.tsx'
 import { ModalObjetivo } from './ModalObjetivo.tsx'
@@ -15,7 +20,9 @@ import { useAcoesObjetivo } from './useAcoesObjetivo.ts'
 type Edicao = { modo: 'novo' } | { modo: 'editar'; id: string } | null
 
 export function TelaObjetivos() {
+  const uid = useUid()
   const [edicao, setEdicao] = useState<Edicao>(null)
+  const excluir = useExclusao()
   const listaObjetivos = useObjetivos()
   const listaItens = useItens()
   const listaOrigens = useOrigens()
@@ -36,14 +43,26 @@ export function TelaObjetivos() {
   }, [itens, origens])
   const nomeFinalidade = useMemo(() => new Map(finalidades.map((f) => [f.id, f.nome])), [finalidades])
   const { exibidos, marcar, finalizar, reverter } = useAcoesObjetivo(objetivos)
+
+  const excluirObjetivo = useCallback(
+    (objetivo: Objetivo) =>
+      excluir(async () => ({
+        bloqueada: false,
+        titulo: 'Excluir objetivo',
+        mensagem: textoConfirmacaoExclusaoObjetivo(objetivo.nome, objetivo.unidades.length),
+        excluir: () => dadosObjetivos.excluir(uid, objetivo.id),
+      })),
+    [excluir, uid],
+  )
   const acoes = useMemo(
     () => ({
       aoAlternar: marcar,
       aoFinalizar: finalizar,
       aoReverter: reverter,
-      aoEditar: (o: { id: string }) => setEdicao({ modo: 'editar', id: o.id }),
+      aoEditar: (o: Objetivo) => setEdicao({ modo: 'editar', id: o.id }),
+      aoExcluir: excluirObjetivo,
     }),
-    [marcar, finalizar, reverter],
+    [marcar, finalizar, reverter, excluirObjetivo],
   )
   const grupos = useMemo(() => agruparPorStatus(exibidos).filter((g) => g.objetivos.length > 0), [exibidos])
 
@@ -100,6 +119,18 @@ export function TelaObjetivos() {
           finalidades={finalidades}
           catalogo={catalogo}
           aoFechar={() => setEdicao(null)}
+          acaoExtra={
+            emEdicao && (
+              <Botao
+                variante="perigo"
+                onClick={async () => {
+                  if (await excluirObjetivo(emEdicao)) setEdicao(null)
+                }}
+              >
+                Excluir objetivo
+              </Botao>
+            )
+          }
         />
       )}
     </>

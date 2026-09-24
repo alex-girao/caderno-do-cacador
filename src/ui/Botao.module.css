@@ -40,3 +40,12 @@
   font-style: italic;
   text-decoration: underline;
 }
+
+/* Ação destrutiva de rodapé, como "Excluir objetivo". */
+.perigo {
+  padding: 0 var(--space-2);
+  background: transparent;
+  color: var(--sangue);
+  border: none;
+  text-decoration: underline;
+}

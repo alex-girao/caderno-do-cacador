@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes } from 'react'
 import estilos from './Botao.module.css'
 
-type Variante = 'primario' | 'secundario' | 'texto'
+type Variante = 'primario' | 'secundario' | 'texto' | 'perigo'
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   variante?: Variante

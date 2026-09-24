@@ -85,3 +85,9 @@ export function textoExclusaoBloqueada(
   const quem = usadoPor.length === 1 ? u.desse : u.desses
   return `${nome} está em uso por ${quantos}: ${listarNomes(usadoPor)}. Altere ${u.campo} ${quem} antes de excluí-la.`
 }
+
+/** Confirmação da exclusão de um objetivo junto com suas unidades (RN19). */
+export function textoConfirmacaoExclusaoObjetivo(nome: string, unidades: number): string {
+  const junto = unidades === 0 ? '' : unidades === 1 ? ' e sua unidade' : ` e suas ${unidades} unidades`
+  return `Excluir ${nome}${junto}? Esta ação não pode ser desfeita.`
+}

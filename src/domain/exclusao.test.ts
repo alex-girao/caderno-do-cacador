@@ -4,6 +4,7 @@ import {
   listarNomes,
   removerItemDoObjetivo,
   textoConfirmacaoExclusaoItem,
+  textoConfirmacaoExclusaoObjetivo,
   textoExclusaoBloqueada,
 } from './exclusao.ts'
 import { resumirObjetivo } from './status.ts'
@@ -157,5 +158,15 @@ describe('textoExclusaoBloqueada', () => {
       'Bolsa está em uso por 1 objetivo: Bolsa do Caçador Lendário. ' +
         'Altere a finalidade desse objetivo antes de excluí-la.',
     )
+  })
+})
+
+describe('textoConfirmacaoExclusaoObjetivo', () => {
+  it.each([
+    [5, 'Excluir Bolsa do Caçador Lendário e suas 5 unidades? Esta ação não pode ser desfeita.'],
+    [1, 'Excluir Bolsa do Caçador Lendário e sua unidade? Esta ação não pode ser desfeita.'],
+    [0, 'Excluir Bolsa do Caçador Lendário? Esta ação não pode ser desfeita.'],
+  ])('com %i unidades (RN19)', (unidades, esperado) => {
+    expect(textoConfirmacaoExclusaoObjetivo('Bolsa do Caçador Lendário', unidades)).toBe(esperado)
   })
 })

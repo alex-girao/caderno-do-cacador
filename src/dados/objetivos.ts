@@ -1,4 +1,4 @@
-import { doc, getDocs, query, runTransaction, serverTimestamp, where } from 'firebase/firestore'
+import { deleteDoc, doc, getDocs, query, runTransaction, serverTimestamp, where } from 'firebase/firestore'
 import type { Transaction } from 'firebase/firestore'
 import type { DocumentSnapshot } from 'firebase/firestore'
 import { aparaNome } from '../domain/cadastros.ts'
@@ -130,6 +130,9 @@ export const objetivos = {
         alteradoEm: serverTimestamp(),
       })
     }),
+
+  /** Exclui o objetivo com suas unidades, que estão embutidas no documento (RN19). */
+  excluir: (uid: string, id: string) => deleteDoc(documentoDoUsuario(uid, 'objetivos', id)),
 
   marcarUnidade: (uid: string, id: string, unidadeId: string, obtido: boolean) =>
     alterarEmTransacao(uid, id, (o) => marcarUnidade(o, unidadeId, obtido)),

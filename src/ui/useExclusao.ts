@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useCallback, useRef } from 'react'
 import { ErroDeDominio } from '../domain/tipos.ts'
 import { useConfirmacao } from './confirmacaoContexto.ts'
 
@@ -19,26 +19,27 @@ export function useExclusao() {
   const { confirmar, avisar } = useConfirmacao()
   const emAndamento = useRef(false)
 
-  async function excluir(verificar: () => Promise<Verificacao>) {
-    if (emAndamento.current) return
+  /** Resolve true se a exclusão foi confirmada e concluída. */
+  return useCallback(async (verificar: () => Promise<Verificacao>): Promise<boolean> => {
+    if (emAndamento.current) return false
     emAndamento.current = true
     try {
       const verificacao = await verificar()
       if (verificacao.bloqueada) {
         await avisar(verificacao)
-        return
+        return false
       }
       const confirmado = await confirmar({ ...verificacao, rotuloConfirmar: 'Excluir' })
       if (confirmado) await verificacao.excluir()
+      return confirmado
     } catch (erro) {
       await avisar({
         titulo: 'Exclusão não concluída',
         mensagem: erro instanceof ErroDeDominio ? erro.message : FALHA,
       })
+      return false
     } finally {
       emAndamento.current = false
     }
-  }
-
-  return excluir
+  }, [confirmar, avisar])
 }
