@@ -42,3 +42,7 @@ a {
   outline: none;
   box-shadow: var(--anel-foco);
 }
+
+.t-detalhe {
+  color: var(--tinta-desbotada);
+}

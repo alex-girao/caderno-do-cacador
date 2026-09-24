@@ -1,0 +1,42 @@
+.botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  border-radius: var(--raio-leve);
+  font-size: 17px;
+  line-height: 28px;
+  cursor: pointer;
+}
+
+.botao:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.primario {
+  padding: 0 20px;
+  background: var(--sangue);
+  color: var(--sobre-sangue);
+  border: none;
+  font-weight: 700;
+}
+
+.secundario {
+  padding: 0 20px;
+  background: transparent;
+  color: var(--tinta);
+  border: 1px solid var(--linha);
+}
+
+/* Ações secundárias de margem: Editar, Excluir, Sair. */
+.texto {
+  padding: 0 var(--space-2);
+  background: transparent;
+  color: var(--tinta-desbotada);
+  border: none;
+  font-size: 14px;
+  line-height: 20px;
+  font-style: italic;
+  text-decoration: underline;
+}
