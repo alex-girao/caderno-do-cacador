@@ -66,6 +66,7 @@ describe('resumirObjetivo', () => {
       obtidas: 0,
       total: 0,
       semItens: true,
+      avisoSemItens: true,
       podeMarcar: true,
       podeFinalizar: false,
       podeReverter: false,
@@ -73,6 +74,21 @@ describe('resumirObjetivo', () => {
   })
 
   it('não sinaliza sem itens quando há unidades', () => {
-    expect(resumirObjetivo(estado(un(false))).semItens).toBe(false)
+    const resumo = resumirObjetivo(estado(un(false)))
+    expect(resumo.semItens).toBe(false)
+    expect(resumo.avisoSemItens).toBe(false)
+  })
+
+  it('finalizado sem itens continua Finalizado, com semItens mas sem o aviso', () => {
+    expect(resumirObjetivo(estado([], true))).toEqual({
+      status: 'Finalizado',
+      obtidas: 0,
+      total: 0,
+      semItens: true,
+      avisoSemItens: false,
+      podeMarcar: false,
+      podeFinalizar: false,
+      podeReverter: true,
+    })
   })
 })

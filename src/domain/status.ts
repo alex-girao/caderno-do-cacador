@@ -25,6 +25,8 @@ export interface Resumo {
   obtidas: number
   total: number
   semItens: boolean
+  /** Exibe o aviso "Sem itens": nunca em objetivos finalizados. */
+  avisoSemItens: boolean
   /** Unidades podem ser marcadas e desmarcadas (RN14). */
   podeMarcar: boolean
   /** Exibe o botão "Finalizado" (RN11). */
@@ -35,11 +37,13 @@ export interface Resumo {
 
 export function resumirObjetivo(objetivo: EstadoObjetivo): Resumo {
   const status = calcularStatus(objetivo)
+  const semItens = estaSemItens(objetivo)
   return {
     status,
     obtidas: contarObtidas(objetivo),
     total: objetivo.unidades.length,
-    semItens: estaSemItens(objetivo),
+    semItens,
+    avisoSemItens: semItens && !objetivo.finalizado,
     podeMarcar: !objetivo.finalizado,
     podeFinalizar: status === 'Obtido',
     podeReverter: status === 'Finalizado',

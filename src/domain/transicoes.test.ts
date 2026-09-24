@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { calcularStatus } from './status.ts'
+import { calcularStatus, resumirObjetivo } from './status.ts'
 import { ErroDeDominio } from './tipos.ts'
 import type { EstadoObjetivo, Unidade } from './tipos.ts'
 import {
@@ -237,11 +237,25 @@ describe('adicionarUnidades', () => {
     expect(calcularStatus(aplicar(vazio, patch))).toBe('Aguardando')
   })
 
-  it('em objetivo finalizado sem itens, volta a Aguardando (RN15)', () => {
+  it('em objetivo finalizado sem itens, limpa finalizado e finalizadoEm e volta a Aguardando (RN15)', () => {
     const finalizadoVazio: EstadoObjetivo = { finalizado: true, unidades: [] }
-    const patch = adicionarUnidades(finalizadoVazio, [unidade('c', 'dente', false)])
-    expect(patch.finalizado).toBe(false)
-    expect(calcularStatus(aplicar(finalizadoVazio, patch))).toBe('Aguardando')
+    const patch = adicionarUnidades(finalizadoVazio, criarUnidades('dente', 2, sequencial()))
+    expect(patch).toEqual({
+      unidades: [unidade('u1', 'dente', false), unidade('u2', 'dente', false)],
+      itemIds: ['dente'],
+      finalizado: false,
+      finalizadoEm: null,
+    })
+    const depois = aplicar(finalizadoVazio, patch)
+    expect(calcularStatus(depois)).toBe('Aguardando')
+    expect(resumirObjetivo(depois)).toMatchObject({ semItens: false, avisoSemItens: false })
+  })
+
+  it('em objetivo finalizado sem itens, mantém Finalizado se a unidade adicionada já vier obtida', () => {
+    const finalizadoVazio: EstadoObjetivo = { finalizado: true, unidades: [] }
+    const patch = adicionarUnidades(finalizadoVazio, [unidade('c', 'dente', true)])
+    expect(patch).not.toHaveProperty('finalizado')
+    expect(calcularStatus(aplicar(finalizadoVazio, patch))).toBe('Finalizado')
   })
 
   it('não muta o objetivo original', () => {
