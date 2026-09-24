@@ -91,7 +91,7 @@ O status é **derivado**, calculado no frontend na seguinte ordem de precedênci
 Toda exclusão exige **confirmação do usuário**.
 
 - **RN19 — Objetivo:** pode ser excluído a qualquer momento, junto com suas unidades.
-- **RN20 — Unidades do objetivo:** podem ser removidas a qualquer momento na edição, respeitando a RN07. Para remover a última unidade, o usuário deve excluir o objetivo.
+- **RN20 — Unidades do objetivo:** a criação exige pelo menos um item (RN07). Na edição, unidades podem ser removidas a qualquer momento, mas a edição não pode remover a última unidade de um objetivo que tem unidades: para isso, o usuário deve excluir o objetivo. Um objetivo esvaziado pela cascata da RN21 pode ser editado (por exemplo, renomeado) sem adicionar itens. Exigir itens obrigaria a adicionar unidades a um Finalizado esvaziado só para renomeá-lo, o que o tiraria de Finalizado (RN15); ajustes não devem desfazer uma conquista.
 - **RN21 — Item do catálogo em uso:** a exclusão remove **as unidades correspondentes em todos os objetivos**. A confirmação informa quantos objetivos e unidades serão afetados. Se algum objetivo ficar sem unidades, ele é sinalizado com o aviso "sem itens" até o usuário adicionar novos itens ou excluí-lo.
 - **RN22 — Finalidade ou Origem em uso:** a exclusão é **bloqueada**, e o sistema informa onde o registro está sendo usado.
 

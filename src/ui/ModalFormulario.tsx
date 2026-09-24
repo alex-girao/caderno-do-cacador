@@ -1,4 +1,5 @@
 import { useId, useState, type FormEvent, type ReactNode } from 'react'
+import { ErroDeDominio } from '../domain/tipos.ts'
 import { Botao } from './Botao.tsx'
 import { MensagemErro } from './MensagemErro.tsx'
 import { Modal } from './Modal.tsx'
@@ -12,11 +13,25 @@ interface Props {
   salvar: () => Promise<void>
   /** Desabilita o Salvar, por exemplo quando falta um cadastro de apoio. */
   bloqueado?: boolean
+  rotuloSalvar?: string
+  largura?: 'normal' | 'larga'
+  /** Ação extra à esquerda do rodapé, como "Excluir objetivo". */
+  acaoExtra?: ReactNode
   children: ReactNode
 }
 
 /** Modal de criação e edição comum a todos os cadastros. */
-export function ModalFormulario({ titulo, aoFechar, validar, salvar, bloqueado, children }: Props) {
+export function ModalFormulario({
+  titulo,
+  aoFechar,
+  validar,
+  salvar,
+  bloqueado,
+  rotuloSalvar = 'Salvar',
+  largura,
+  acaoExtra,
+  children,
+}: Props) {
   const idFormulario = useId()
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
@@ -30,8 +45,10 @@ export function ModalFormulario({ titulo, aoFechar, validar, salvar, bloqueado, 
     try {
       await salvar()
       aoFechar()
-    } catch {
-      setErro('Não foi possível salvar. Verifique a conexão e tente de novo.')
+    } catch (erro) {
+      setErro(
+        erro instanceof ErroDeDominio ? erro.message : 'Não foi possível salvar. Verifique a conexão e tente de novo.',
+      )
       setSalvando(false)
     }
   }
@@ -40,8 +57,10 @@ export function ModalFormulario({ titulo, aoFechar, validar, salvar, bloqueado, 
     <Modal
       titulo={titulo}
       aoFechar={aoFechar}
+      largura={largura}
       rodape={
         <>
+          {acaoExtra && <span className="a-esquerda">{acaoExtra}</span>}
           <Botao onClick={aoFechar}>Cancelar</Botao>
           <Botao
             variante="primario"
@@ -49,7 +68,7 @@ export function ModalFormulario({ titulo, aoFechar, validar, salvar, bloqueado, 
             form={idFormulario}
             disabled={salvando || bloqueado}
           >
-            {salvando ? 'Salvando' : 'Salvar'}
+            {salvando ? 'Salvando' : rotuloSalvar}
           </Botao>
         </>
       }

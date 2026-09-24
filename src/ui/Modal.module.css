@@ -1,5 +1,4 @@
 .modal {
-  width: min(560px, calc(100vw - 2 * var(--space-4)));
   max-height: calc(100vh - 2 * var(--space-4));
   margin: auto;
   padding: var(--space-8);
@@ -11,6 +10,14 @@
   border: none;
   border-radius: var(--raio-papel);
   box-shadow: var(--sombra-modal);
+}
+
+.normal {
+  width: min(560px, calc(100vw - 2 * var(--space-4)));
+}
+
+.larga {
+  width: min(720px, calc(100vw - 2 * var(--space-4)));
 }
 
 /* Fundo escurecido das telas de referência (tinta a 60%). */
@@ -57,6 +64,11 @@
   flex-wrap: wrap;
   justify-content: flex-end;
   gap: var(--space-2);
+}
+
+/* Ação à esquerda do rodapé, como "Excluir objetivo". */
+.rodape > :global(.a-esquerda) {
+  margin-right: auto;
 }
 
 @media (max-width: 640px) {

@@ -9,13 +9,15 @@ interface Props {
   rodape?: ReactNode
   /** Papel ARIA: "alertdialog" para confirmações e avisos. */
   papel?: 'dialog' | 'alertdialog'
+  /** "larga" para formulários extensos, como o de objetivo. */
+  largura?: 'normal' | 'larga'
 }
 
 /**
  * Modal sobre <dialog> nativo: prende o foco, fecha com Esc e devolve o
  * foco a quem o abriu. É montado aberto; para fechar, desmonte-o.
  */
-export function Modal({ titulo, aoFechar, children, rodape, papel = 'dialog' }: Props) {
+export function Modal({ titulo, aoFechar, children, rodape, papel = 'dialog', largura = 'normal' }: Props) {
   const dialogo = useRef<HTMLDialogElement>(null)
   const idTitulo = useId()
   const cancelar = useEffectEvent(aoFechar)
@@ -40,7 +42,7 @@ export function Modal({ titulo, aoFechar, children, rodape, papel = 'dialog' }: 
   }, [])
 
   return (
-    <dialog ref={dialogo} className={estilos.modal} aria-labelledby={idTitulo} role={papel}>
+    <dialog ref={dialogo} className={`${estilos.modal} ${estilos[largura]}`} aria-labelledby={idTitulo} role={papel}>
       <div className={estilos.cabecalho}>
         <h2 id={idTitulo} className="t-secao">
           {titulo}

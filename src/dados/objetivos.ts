@@ -1,6 +1,15 @@
-import { getDocs, query, runTransaction, serverTimestamp, where } from 'firebase/firestore'
+import { doc, getDocs, query, runTransaction, serverTimestamp, where } from 'firebase/firestore'
 import type { DocumentSnapshot } from 'firebase/firestore'
-import { finalizar, marcarUnidade, reverter, type PatchFinalizacao, type PatchUnidades } from '../domain/transicoes.ts'
+import { aparaNome } from '../domain/cadastros.ts'
+import { montarPatchEdicao, type FormularioObjetivo } from '../domain/edicaoObjetivo.ts'
+import {
+  finalizar,
+  marcarUnidade,
+  montarNovoObjetivo,
+  reverter,
+  type PatchFinalizacao,
+  type PatchUnidades,
+} from '../domain/transicoes.ts'
 import { AGORA, ErroDeDominio, type Objetivo, type Unidade } from '../domain/tipos.ts'
 import { db } from '../firebase/app.ts'
 import { assinarConsulta, type AoFalhar, type AoReceber } from './assinatura.ts'
@@ -26,7 +35,7 @@ export function converterObjetivo(snapshot: DocumentSnapshot): Objetivo {
   }
 }
 
-type Patch = Partial<PatchUnidades & PatchFinalizacao>
+type Patch = Partial<PatchUnidades & PatchFinalizacao & Pick<Objetivo, 'nome' | 'finalidadeId'>>
 
 /** Troca a marca AGORA do domínio por serverTimestamp() (seção 12.7). */
 export function paraGravacao(patch: Patch) {
@@ -59,6 +68,30 @@ export const objetivos = {
   assinar(uid: string, aoReceber: AoReceber<Objetivo>, aoFalhar: AoFalhar) {
     return assinarConsulta(colecaoDoUsuario(uid, 'objetivos'), converterObjetivo, aoReceber, aoFalhar)
   },
+
+  /** Cria o objetivo, que nasce Aguardando com uma unidade por quantidade (RN06, RN07, RN09). */
+  async criar(uid: string, { nome, finalidadeId, linhas }: FormularioObjetivo): Promise<string> {
+    const dados = montarNovoObjetivo(linhas)
+    const ref = doc(colecaoDoUsuario(uid, 'objetivos'))
+    await runTransaction(db, async (transacao) => {
+      transacao.set(ref, {
+        nome: aparaNome(nome),
+        finalidadeId,
+        ...paraGravacao(dados),
+        criadoEm: serverTimestamp(),
+        alteradoEm: null,
+      })
+    })
+    return ref.id
+  },
+
+  /** Edita dados e itens; as unidades são reconciliadas sobre o estado relido (RN08, RN15, RN20). */
+  editar: (uid: string, id: string, { nome, finalidadeId, linhas }: FormularioObjetivo) =>
+    alterarEmTransacao(uid, id, (objetivo) => {
+      const { unidades, itemIds, finalizado, finalizadoEm } = montarPatchEdicao(objetivo, linhas)
+      const patch: Patch = { nome: aparaNome(nome), finalidadeId, unidades, itemIds }
+      return finalizado === undefined ? patch : { ...patch, finalizado, finalizadoEm }
+    }),
 
   marcarUnidade: (uid: string, id: string, unidadeId: string, obtido: boolean) =>
     alterarEmTransacao(uid, id, (o) => marcarUnidade(o, unidadeId, obtido)),

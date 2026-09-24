@@ -1,4 +1,4 @@
-import { useId, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes } from 'react'
+import { useId, type InputHTMLAttributes, type ReactNode, type Ref, type SelectHTMLAttributes } from 'react'
 import estilos from './Campo.module.css'
 
 interface Rotulado {
@@ -16,11 +16,15 @@ function Rotulo({ id, rotulo, children }: { id: string; rotulo: string; children
   )
 }
 
-export function Campo({ rotulo, ...resto }: Rotulado & InputHTMLAttributes<HTMLInputElement>) {
+export function Campo({
+  rotulo,
+  ref,
+  ...resto
+}: Rotulado & InputHTMLAttributes<HTMLInputElement> & { ref?: Ref<HTMLInputElement> }) {
   const id = useId()
   return (
     <Rotulo id={id} rotulo={rotulo}>
-      <input id={id} type="text" className={estilos.controle} {...resto} />
+      <input id={id} ref={ref} type="text" className={estilos.controle} {...resto} />
     </Rotulo>
   )
 }
