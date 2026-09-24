@@ -2,8 +2,16 @@ import { describe, expect, it } from 'vitest'
 import { aparaNome, chaveDoNome, ordenarPorNome, validarNome } from './cadastros.ts'
 
 describe('aparaNome', () => {
-  it('remove espaços nas pontas e preserva o miolo', () => {
+  it('remove espaços nas pontas', () => {
     expect(aparaNome('  Pena de Ganso \n')).toBe('Pena de Ganso')
+  })
+
+  it('reduz espaços repetidos a um, inclusive tabulações e quebras', () => {
+    expect(aparaNome('Pena   de\t\nGanso')).toBe('Pena de Ganso')
+  })
+
+  it('preserva caixa e acentos', () => {
+    expect(aparaNome(' Carcaça  de LOBO ')).toBe('Carcaça de LOBO')
   })
 })
 
@@ -30,6 +38,13 @@ describe('validarNome', () => {
     { id: 'o1', nome: 'Animal' },
     { id: 'o2', nome: 'Objeto' },
   ]
+
+  it('devolve o nome com espaços normalizados, como será salvo (RN27)', () => {
+    expect(validarNome('  Pena   de  Garça ', origens, { tipo: 'origem' })).toEqual({
+      valido: true,
+      nome: 'Pena de Garça',
+    })
+  })
 
   it('devolve o nome aparado quando é válido', () => {
     expect(validarNome('  Planta ', origens, { tipo: 'origem' })).toEqual({

@@ -43,7 +43,7 @@ Todos os cadastros pertencem ao usuário autenticado. Toda edição é feita em 
 - **RN02 — Origem:** criar, listar, editar e excluir. Campo obrigatório: nome.
 - **RN03 — Item:** criar, listar, editar e excluir. Campos obrigatórios: nome e origem.
 - **RN04 — Objetivo:** criar, listar, editar e excluir. Campos obrigatórios: nome, finalidade e pelo menos um item.
-- **RN27 — Nomes únicos:** dentro de cada cadastro de Finalidade, Origem e Item, o nome não pode repetir o de outro registro. A comparação ignora maiúsculas e minúsculas, acentos, espaços nas pontas e espaços repetidos; o nome é salvo sem espaços nas pontas. Na edição, o próprio registro não conta, o que permite corrigir apenas a caixa ou a acentuação. A regra vale dentro de cada coleção: uma Origem e uma Finalidade podem ter o mesmo nome. A mensagem nomeia o registro existente, por exemplo: "Já existe uma origem chamada Animal." A validação roda no cliente, sobre a lista mantida pelo `onSnapshot`.
+- **RN27 — Nomes únicos:** dentro de cada cadastro de Finalidade, Origem e Item, o nome não pode repetir o de outro registro. A comparação ignora maiúsculas e minúsculas, acentos, espaços nas pontas e espaços repetidos. O nome é salvo com a mesma normalização de espaços (sem espaços nas pontas e com espaços repetidos reduzidos a um), preservando a caixa e a acentuação digitadas. Na edição, o próprio registro não conta, o que permite corrigir apenas a caixa ou a acentuação. A regra vale dentro de cada coleção: uma Origem e uma Finalidade podem ter o mesmo nome. A mensagem nomeia o registro existente, por exemplo: "Já existe uma origem chamada Animal." A validação roda no cliente, sobre a lista mantida pelo `onSnapshot`.
 
 ## 5. Montagem do objetivo
 
@@ -200,6 +200,8 @@ O Firestore não consulta dentro de arrays de mapas. O campo `itemIds` permite l
 
 A exclusão em cascata da RN21 usa **transação** (`runTransaction`) para remover o item do catálogo e atualizar todos os objetivos afetados de uma só vez. A consulta por `itemIds` roda antes, porque o SDK web não faz consultas dentro de transações, e alimenta a confirmação. Dentro da transação, cada objetivo é relido e tem as unidades do item removidas a partir do estado atual, com `itemIds` recalculado e `alteradoEm` atualizado (RN18); `finalizado` não é alterado. Uma transação comporta até 500 escritas, o que limita a cascata a 499 objetivos.
 
+**Janela entre a consulta e a transação.** Um objetivo que receba o item depois da consulta por `itemIds` ficaria fora da cascata. Para fechar essa janela, **toda transação que adiciona unidades a um objetivo relê, dentro da transação, os documentos dos itens referenciados pelas novas unidades e aborta se algum não existir**. Assim, ou a adição acontece antes da exclusão (e o objetivo aparece na consulta da cascata), ou ela falha por encontrar o item já excluído. *Implementação prevista para a Etapa 3, junto com a criação e a edição de objetivos.*
+
 ### 12.6 Leitura e ordenação
 
 Como o status é calculado, o Firestore não consegue ordenar por ele. A coleção `objetivos` é assinada inteira com `onSnapshot`, e o status e a ordenação (RN23 e RN24) são calculados no React. Isso também atualiza a tela em tempo real entre dispositivos.
@@ -221,3 +223,8 @@ service cloud.firestore {
   }
 }
 ```
+
+## 13. Pendências
+
+- **Uso offline.** Hoje as gravações aguardam a confirmação do servidor: sem conexão, o modal permanece em "Salvando" até a conexão voltar, e a gravação só então é concluída. Falta definir o comportamento offline: persistência local do Firestore (`persistentLocalCache`), fechar o modal sem aguardar o servidor e como sinalizar ao usuário que há alterações ainda não sincronizadas.
+- **Janela da cascata da RN21.** Pendente até a Etapa 3; ver a seção 12.5.

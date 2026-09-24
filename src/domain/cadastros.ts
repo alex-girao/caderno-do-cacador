@@ -5,23 +5,20 @@ interface ComNome {
   nome: string
 }
 
-/** Nome como será salvo: sem espaços nas pontas. */
+/** Nome como será salvo: sem espaços nas pontas e com espaços repetidos reduzidos a um. */
 export function aparaNome(nome: string): string {
-  return nome.trim()
+  return nome.trim().replace(/\s+/g, ' ')
 }
 
 /**
- * Forma usada para comparar nomes (RN27): sem diferença de maiúsculas,
- * minúsculas e acentos, sem espaços nas pontas e com espaços repetidos
- * reduzidos a um.
+ * Forma usada para comparar nomes (RN27): o nome aparado, sem diferença
+ * de maiúsculas, minúsculas e acentos.
  */
 export function chaveDoNome(nome: string): string {
-  return nome
+  return aparaNome(nome)
     .normalize('NFD')
     .replace(/\p{Diacritic}/gu, '')
     .toLocaleLowerCase('pt-BR')
-    .trim()
-    .replace(/\s+/g, ' ')
 }
 
 export type TipoCadastro = 'finalidade' | 'origem' | 'item'
