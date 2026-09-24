@@ -24,6 +24,26 @@ export interface Objetivo {
   alteradoEm: Instante | null
 }
 
+/** Campos comuns a todo registro (RN16, RN17). */
+interface Registro {
+  id: string
+  criadoEm: Instante
+  alteradoEm: Instante | null
+}
+
+export interface Finalidade extends Registro {
+  nome: string
+}
+
+export interface Origem extends Registro {
+  nome: string
+}
+
+export interface Item extends Registro {
+  nome: string
+  origemId: string
+}
+
 /** Parte do objetivo que determina o status. */
 export type EstadoObjetivo = Pick<Objetivo, 'finalizado' | 'unidades'>
 
