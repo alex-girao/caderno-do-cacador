@@ -1,0 +1,92 @@
+.cartao {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: var(--space-4);
+  background: var(--papel-marcado);
+  border-top: 1px solid transparent;
+  border-radius: var(--raio-papel);
+}
+
+/* Página já arquivada: direto sobre o papel, sem cartão. */
+.finalizado {
+  background: transparent;
+  border-top-color: var(--linha);
+}
+
+.topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.acoesTopo {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.cabecalho {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.checklist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--linha);
+}
+
+.checklist li {
+  border-bottom: 1px solid var(--linha);
+}
+
+.unidade {
+  width: 100%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 var(--space-1);
+  background: transparent;
+  border: none;
+  text-align: left;
+  color: var(--tinta);
+  cursor: pointer;
+}
+
+.unidade:disabled {
+  cursor: default;
+}
+
+.nome {
+  flex-grow: 1;
+  font-size: 17px;
+  line-height: 28px;
+}
+
+.riscado {
+  color: var(--tinta-desbotada);
+  text-decoration: line-through;
+}
+
+.removido {
+  color: var(--tinta-desbotada);
+  font-style: italic;
+}
+
+.semItens {
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--linha);
+  border-bottom: 1px solid var(--linha);
+}
+
+.rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-height: 44px;
+}

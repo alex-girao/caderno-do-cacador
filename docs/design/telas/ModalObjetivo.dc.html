@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Caderno do Caçador: editar objetivo</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400..700;1,400..700&amp;family=Rye&amp;display=swap">
+<style>
+body{margin:0}
+button,input,select{font:inherit}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #8e1b17;outline-offset:2px}
+</style>
+</helmet>
+<div style="width: 1280px; height: 1000px; box-sizing: border-box; background: #2a1c1099; display: flex; align-items: center; justify-content: center; font-family: 'Libre Caslon Text', Georgia, serif; color: #2a1c10">
+<div role="dialog" aria-labelledby="titulo-modal" style="width: 720px; box-sizing: border-box; background: #efe4c9; box-shadow: 0 12px 32px -4px #2a1c1059; padding: 32px; display: flex; flex-direction: column; gap: 24px">
+
+<div style="display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; border-bottom: 1px solid #8a7350">
+<h2 id="titulo-modal" style="margin: 0; font-family: Rye, Georgia, serif; font-weight: 400; font-size: 22px; line-height: 28px">Editar objetivo</h2>
+<button type="button" aria-label="Fechar" style="width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; background: transparent; border: none; color: #5c4833; cursor: pointer">
+<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 4l10 10M14 4L4 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+</button>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<label for="nome" style="font-size: 14px; line-height: 20px; font-style: italic; color: #5c4833">Nome</label>
+<input id="nome" type="text" value="Bolsa do Caçador Lendário" style="height: 44px; box-sizing: border-box; padding: 0 12px; background: #e2d3ae; border: 1px solid #8a7350; border-radius: 3px; color: #2a1c10; font-size: 17px">
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<label for="finalidade" style="font-size: 14px; line-height: 20px; font-style: italic; color: #5c4833">Finalidade</label>
+<select id="finalidade" style="height: 44px; box-sizing: border-box; padding: 0 12px; background: #e2d3ae; border: 1px solid #8a7350; border-radius: 3px; color: #2a1c10; font-size: 17px">
+<option selected="selected">Bolsa</option>
+<option>Acampamento</option>
+<option>Missão</option>
+</select>
+</div>
+</div>
+
+<section style="display: flex; flex-direction: column; gap: 8px">
+<h3 style="margin: 0; font-size: 17px; line-height: 28px; font-weight: 700">Itens do objetivo</h3>
+<ul style="list-style: none; margin: 0; padding: 0; border-top: 1px solid #8a7350">
+<li style="display: flex; align-items: center; gap: 16px; min-height: 52px; border-bottom: 1px solid #8a7350">
+<span style="flex-grow: 1; font-size: 17px; line-height: 28px">Pele de Cervo <span style="font-size: 14px; font-style: italic; color: #5c4833">Animal, 1 obtida</span></span>
+<div style="display: flex; align-items: center; gap: 4px">
+<button type="button" aria-label="Diminuir Pele de Cervo" style="width: 44px; height: 44px; background: transparent; border: 1px solid #8a7350; border-radius: 3px; color: #2a1c10; font-size: 20px; cursor: pointer">−</button>
+<span style="min-width: 32px; text-align: center; font-size: 17px; font-weight: 700">1</span>
+<button type="button" aria-label="Aumentar Pele de Cervo" style="width: 44px; height: 44px; background: transparent; border: 1px solid #8a7350; border-radius: 3px; color: #2a1c10; font-size: 20px; cursor: pointer">+</button>
+</div>
+<button type="button" style="min-height: 44px; padding: 0 8px; background: transparent; border: none; color: #5c4833; font-size: 14px; font-style: italic; text-decoration: underline; cursor: pointer">Remover</button>
+</li>
+<li style="display: flex; align-items: center; gap: 16px; min-height: 52px; border-bottom: 1px solid #8a7350">
+<span style="flex-grow: 1; font-size: 17px; line-height: 28px">Carcaça de Lobo <span style="font-size: 14px; font-style: italic; color: #5c4833">Animal, nenhuma obtida</span></span>
+<div style="display: flex; align-items: center; gap: 4px">
+<button type="button" aria-label="Diminuir Carcaça de Lobo" style="width: 44px; height: 44px; background: transparent; border: 1px solid #8a7350; border-radius: 3px; color: #2a1c10; font-size: 20px; cursor: pointer">−</button>
+<span style="min-width: 32px; text-align: center; font-size: 17px; font-weight: 700">1</span>
+<button type="button" aria-label="Aumentar Carcaça de Lobo" style="width: 44px; height: 44px; background: transparent; border: 1px solid #8a7350; border-radius: 3px; color: #2a1c10; font-size: 20px; cursor: pointer">+</button>
+</div>
+<button type="button" style="min-height: 44px; padding: 0 8px; background: transparent; border: none; color: #5c4833; font-size: 14px; font-style: italic; text-decoration: underline; cursor: pointer">Remover</button>
+</li>
+<li style="display: flex; align-items: center; gap: 16px; min-height: 52px; border-bottom: 1px solid #8a7350">
+<span style="flex-grow: 1; font-size: 17px; line-height: 28px">Pena de Ganso <span style="font-size: 14px; font-style: italic; color: #5c4833">Animal, 1 de 3 obtida</span></span>
+<div style="display: flex; align-items: center; gap: 4px">
+<button type="button" aria-label="Diminuir Pena de Ganso" style="width: 44px; height: 44px; background: transparent; border: 1px solid #8a7350; border-radius: 3px; color: #2a1c10; font-size: 20px; cursor: pointer">−</button>
+<span style="min-width: 32px; text-align: center; font-size: 17px; font-weight: 700">3</span>
+<button type="button" aria-label="Aumentar Pena de Ganso" style="width: 44px; height: 44px; background: transparent; border: 1px solid #8a7350; border-radius: 3px; color: #2a1c10; font-size: 20px; cursor: pointer">+</button>
+</div>
+<button type="button" style="min-height: 44px; padding: 0 8px; background: transparent; border: none; color: #5c4833; font-size: 14px; font-style: italic; text-decoration: underline; cursor: pointer">Remover</button>
+</li>
+</ul>
+<p style="margin: 0; font-size: 14px; line-height: 20px; font-style: italic; color: #5c4833">Ao reduzir a quantidade, as unidades ainda não obtidas saem primeiro.</p>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 8px; padding: 16px; background: #e2d3ae">
+<h3 style="margin: 0; font-size: 17px; line-height: 28px; font-weight: 700">Adicionar itens</h3>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<label for="filtro-nome" style="font-size: 14px; line-height: 20px; font-style: italic; color: #5c4833">Filtrar por nome</label>
+<input id="filtro-nome" type="search" value="pe" style="height: 44px; box-sizing: border-box; padding: 0 12px; background: #efe4c9; border: 1px solid #8a7350; border-radius: 3px; color: #2a1c10; font-size: 17px">
+</div>
+<div style="display: flex; flex-direction: column; gap: 4px">
+<label for="filtro-origem" style="font-size: 14px; line-height: 20px; font-style: italic; color: #5c4833">Filtrar por origem</label>
+<select id="filtro-origem" style="height: 44px; box-sizing: border-box; padding: 0 12px; background: #efe4c9; border: 1px solid #8a7350; border-radius: 3px; color: #2a1c10; font-size: 17px">
+<option selected="selected">Todas as origens</option>
+<option>Animal</option>
+<option>Objeto</option>
+<option>Planta</option>
+</select>
+</div>
+</div>
+<ul style="list-style: none; margin: 0; padding: 0">
+<li style="display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 48px; border-bottom: 1px solid #8a7350">
+<span style="font-size: 17px; line-height: 28px">Pele de Coelho <span style="font-size: 14px; font-style: italic; color: #5c4833">Animal</span></span>
+<button type="button" style="min-height: 44px; padding: 0 16px; background: transparent; border: 1px solid #8a7350; border-radius: 3px; color: #2a1c10; font-size: 17px; cursor: pointer">Adicionar</button>
+</li>
+<li style="display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 48px; border-bottom: 1px solid #8a7350">
+<span style="font-size: 17px; line-height: 28px">Pele de Raposa <span style="font-size: 14px; font-style: italic; color: #5c4833">Animal</span></span>
+<button type="button" style="min-height: 44px; padding: 0 16px; background: transparent; border: 1px solid #8a7350; border-radius: 3px; color: #2a1c10; font-size: 17px; cursor: pointer">Adicionar</button>
+</li>
+<li style="display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 48px">
+<span style="font-size: 17px; line-height: 28px">Pena de Garça <span style="font-size: 14px; font-style: italic; color: #5c4833">Animal</span></span>
+<button type="button" style="min-height: 44px; padding: 0 16px; background: transparent; border: 1px solid #8a7350; border-radius: 3px; color: #2a1c10; font-size: 17px; cursor: pointer">Adicionar</button>
+</li>
+</ul>
+</section>
+
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 16px; border-top: 1px solid #8a7350">
+<button type="button" style="min-height: 44px; padding: 0 8px; background: transparent; border: none; color: #8e1b17; font-size: 17px; text-decoration: underline; cursor: pointer">Excluir objetivo</button>
+<div style="display: flex; gap: 8px">
+<a href="ListaObjetivos.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; box-sizing: border-box; background: transparent; border: 1px solid #8a7350; border-radius: 3px; color: #2a1c10; font-size: 17px; text-decoration: none">Cancelar</a>
+<a href="ListaObjetivos.dc.html" style="display: inline-flex; align-items: center; min-height: 44px; padding: 0 20px; box-sizing: border-box; background: #8e1b17; border-radius: 3px; color: #f7eedb; font-size: 17px; font-weight: 700; text-decoration: none">Salvar alterações</a>
+</div>
+</div>
+
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

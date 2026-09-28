@@ -1,0 +1,16 @@
+.lacre {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--linha);
+  border-radius: var(--raio-lacre);
+  color: var(--sobre-sangue);
+}
+
+.obtido {
+  background: var(--sangue);
+  border-color: var(--sangue);
+}

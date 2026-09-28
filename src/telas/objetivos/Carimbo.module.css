@@ -1,0 +1,7 @@
+.carimbo {
+  display: inline-block;
+  padding: var(--space-1) var(--space-2);
+  border: 2px solid currentColor;
+  border-radius: var(--raio-leve);
+  transform: rotate(-2deg);
+}

@@ -1,0 +1,108 @@
+.duasColunas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: var(--space-4);
+}
+
+.secao {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.subtitulo {
+  font-size: 17px;
+  line-height: 28px;
+  font-weight: 700;
+}
+
+.linhas {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--linha);
+}
+
+.linha {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  min-height: 52px;
+  padding: var(--space-1) 0;
+  border-bottom: 1px solid var(--linha);
+}
+
+.nomeLinha {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.removido {
+  color: var(--tinta-desbotada);
+  font-style: italic;
+}
+
+.quantidade {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.passo {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--linha);
+  border-radius: var(--raio-leve);
+  color: var(--tinta);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.passo:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.valor {
+  min-width: 32px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.adicionar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--papel-marcado);
+}
+
+/* Campos do quadro sobre papel-marcado ficam em papel, como no mockup. */
+.adicionar input,
+.adicionar select {
+  background: var(--papel);
+}
+
+.disponiveis {
+  max-height: 264px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0 var(--space-1);
+  list-style: none;
+}
+
+.disponivel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 48px;
+  border-bottom: 1px solid var(--linha);
+}
+
+.disponivel:last-child {
+  border-bottom: none;
+}

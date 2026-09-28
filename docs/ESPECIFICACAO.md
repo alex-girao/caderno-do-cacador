@@ -43,6 +43,7 @@ Todos os cadastros pertencem ao usuário autenticado. Toda edição é feita em 
 - **RN02 — Origem:** criar, listar, editar e excluir. Campo obrigatório: nome.
 - **RN03 — Item:** criar, listar, editar e excluir. Campos obrigatórios: nome e origem.
 - **RN04 — Objetivo:** criar, listar, editar e excluir. Campos obrigatórios: nome, finalidade e pelo menos um item.
+- **RN27 — Nomes únicos:** dentro de cada cadastro de Finalidade, Origem e Item, o nome não pode repetir o de outro registro. A comparação ignora maiúsculas e minúsculas, acentos, espaços nas pontas e espaços repetidos. O nome é salvo com a mesma normalização de espaços (sem espaços nas pontas e com espaços repetidos reduzidos a um), preservando a caixa e a acentuação digitadas. Na edição, o próprio registro não conta, o que permite corrigir apenas a caixa ou a acentuação. A regra vale dentro de cada coleção: uma Origem e uma Finalidade podem ter o mesmo nome. A mensagem nomeia o registro existente, por exemplo: "Já existe uma origem chamada Animal." A validação roda no cliente, sobre a lista mantida pelo `onSnapshot`.
 
 ## 5. Montagem do objetivo
 
@@ -60,9 +61,14 @@ O status é **derivado**, calculado no frontend na seguinte ordem de precedênci
 | Condição | Status |
 |---|---|
 | `finalizado = true` | **Finalizado** |
+| Nenhuma unidade (objetivo "sem itens") | **Aguardando** |
 | Todas as unidades obtidas | **Obtido** |
 | Pelo menos uma unidade obtida | **Buscando** |
 | Nenhuma unidade obtida | **Aguardando** |
+
+**Objetivo sem itens.** Um objetivo só fica sem unidades quando a exclusão em cascata de um item do catálogo (RN21) remove todas as suas unidades. Nesse caso ele fica **Aguardando** (e não Obtido, ainda que "todas as unidades obtidas" seja verdadeiro para uma lista vazia), recebe a sinalização `semItens` e **não pode ser finalizado**. O cartão exibe o aviso "Sem itens", orientando o usuário a editar o objetivo para adicionar itens ou a excluí-lo.
+
+**Objetivo finalizado sem itens.** Se a cascata da RN21 esvaziar um objetivo **finalizado**, ele continua **Finalizado**, conforme a precedência da tabela acima: excluir um item do catálogo não desfaz uma conquista. Ele recebe `semItens`, mas o aviso "Sem itens" **não é exibido** em objetivos finalizados. Se o usuário adicionar a ele uma unidade não obtida, vale a RN15: `finalizado` volta a `false` e `finalizadoEm` a `null` na mesma escrita, e o objetivo passa a **Aguardando**, já que nenhuma das unidades presentes foi obtida. O botão **"Reverter"** também continua disponível: no caso normal a RN13 devolve o objetivo para **Obtido**, mas, sem unidades, ele vai para **Aguardando** e passa a exibir o aviso "Sem itens".
 
 ### 6.2 Regras de transição
 
@@ -85,7 +91,7 @@ O status é **derivado**, calculado no frontend na seguinte ordem de precedênci
 Toda exclusão exige **confirmação do usuário**.
 
 - **RN19 — Objetivo:** pode ser excluído a qualquer momento, junto com suas unidades.
-- **RN20 — Unidades do objetivo:** podem ser removidas a qualquer momento na edição, respeitando a RN07. Para remover a última unidade, o usuário deve excluir o objetivo.
+- **RN20 — Unidades do objetivo:** a criação exige pelo menos um item (RN07). Na edição, unidades podem ser removidas a qualquer momento, mas a edição não pode remover a última unidade de um objetivo que tem unidades: para isso, o usuário deve excluir o objetivo. Um objetivo esvaziado pela cascata da RN21 pode ser editado (por exemplo, renomeado) sem adicionar itens. Exigir itens obrigaria a adicionar unidades a um Finalizado esvaziado só para renomeá-lo, o que o tiraria de Finalizado (RN15); ajustes não devem desfazer uma conquista.
 - **RN21 — Item do catálogo em uso:** a exclusão remove **as unidades correspondentes em todos os objetivos**. A confirmação informa quantos objetivos e unidades serão afetados. Se algum objetivo ficar sem unidades, ele é sinalizado com o aviso "sem itens" até o usuário adicionar novos itens ou excluí-lo.
 - **RN22 — Finalidade ou Origem em uso:** a exclusão é **bloqueada**, e o sistema informa onde o registro está sendo usado.
 
@@ -192,7 +198,9 @@ O Firestore não consulta dentro de arrays de mapas. O campo `itemIds` permite l
 | RN22 — Finalidade em uso | `objetivos` | `where("finalidadeId", "==", finalidadeId)` |
 | RN22 — Origem em uso | `itens` | `where("origemId", "==", origemId)` |
 
-A exclusão em cascata da RN21 usa **batch** para remover o item do catálogo e atualizar todos os objetivos afetados de uma só vez.
+A exclusão em cascata da RN21 usa **transação** (`runTransaction`) para remover o item do catálogo e atualizar todos os objetivos afetados de uma só vez. A consulta por `itemIds` roda antes, porque o SDK web não faz consultas dentro de transações, e alimenta a confirmação. Dentro da transação, cada objetivo é relido e tem as unidades do item removidas a partir do estado atual, com `itemIds` recalculado e `alteradoEm` atualizado (RN18); `finalizado` não é alterado. Uma transação comporta até 500 escritas, o que limita a cascata a 499 objetivos.
+
+**Janela entre a consulta e a transação.** Um objetivo que receba o item depois da consulta por `itemIds` ficaria fora da cascata. Para reduzir essa janela, **toda transação que adiciona unidades a um objetivo (criação e edição) relê, dentro da transação, os documentos dos itens referenciados pelas novas unidades e da finalidade escolhida, e aborta se algum não existir**, com uma mensagem que nomeia o que foi excluído. Assim, não é possível adicionar unidades de um item já excluído. Resta um caso raro: se a adição for gravada **entre** a consulta da cascata e o commit da cascata, as duas transações passam, porque nenhuma lê um documento que a outra escreve. Fechá-lo exigiria que a adição também gravasse no documento do item. Em vez disso, **unidades cujo item não existe mais são exibidas como "Item removido"**, sem quebrar a tela, e podem ser reduzidas ou retiradas na edição (mas não aumentadas).
 
 ### 12.6 Leitura e ordenação
 
@@ -215,3 +223,7 @@ service cloud.firestore {
   }
 }
 ```
+
+## 13. Pendências
+
+- **Uso offline.** Hoje as gravações dos cadastros aguardam a confirmação do servidor: sem conexão, o modal permanece em "Salvando" até a conexão voltar, e a gravação só então é concluída. Já as gravações de objetivos usam transações, que exigem o servidor: sem conexão, elas falham, a marcação otimista é desfeita e o usuário vê a mensagem de erro. Falta definir o comportamento offline: persistência local do Firestore (`persistentLocalCache`), fechar o modal sem aguardar o servidor e como sinalizar ao usuário que há alterações ainda não sincronizadas.

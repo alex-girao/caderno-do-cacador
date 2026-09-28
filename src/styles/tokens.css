@@ -1,0 +1,94 @@
+/* Arquivo gerado por scripts/gerar-tokens.ts a partir de docs/design/tokens.json.
+   Não edite à mão: altere o JSON e rode `npm run tokens`. */
+
+:root {
+  --fonte-display: Rye, "Libre Caslon Text", Georgia, serif;
+  --fonte-texto: "Libre Caslon Text", Georgia, "Times New Roman", serif;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-4: 16px;
+  --space-8: 32px;
+  --raio-papel: 0;
+  --raio-leve: 3px;
+  --raio-lacre: 9999px;
+}
+
+:root,
+[data-theme='pergaminho'] {
+  color-scheme: light;
+  --papel: #efe4c9;
+  --papel-marcado: #e2d3ae;
+  --linha: #8a7350;
+  --tinta: #2a1c10;
+  --tinta-desbotada: #5c4833;
+  --sangue: #8e1b17;
+  --sobre-sangue: #f7eedb;
+  --status-aguardando: #3f3527;
+  --status-buscando: #7a4d06;
+  --status-obtido: #35521f;
+  --status-finalizado: #6e6457;
+  --sombra-modal: 0 12px 32px -4px #2a1c1059;
+  --anel-foco: 0 0 0 2px #efe4c9, 0 0 0 4px #8e1b17;
+}
+
+[data-theme='fogueira'] {
+  color-scheme: dark;
+  --papel: #17110b;
+  --papel-marcado: #241a11;
+  --linha: #806b4f;
+  --tinta: #ecdfc3;
+  --tinta-desbotada: #b9a686;
+  --sangue: #e2604f;
+  --sobre-sangue: #17110b;
+  --status-aguardando: #b2a38a;
+  --status-buscando: #e0a948;
+  --status-obtido: #97b86c;
+  --status-finalizado: #8f8474;
+  --sombra-modal: 0 12px 32px -4px #000000cc;
+  --anel-foco: 0 0 0 2px #17110b, 0 0 0 4px #e2604f;
+}
+
+.t-marca {
+  font-family: var(--fonte-display);
+  font-size: 40px;
+  line-height: 44px;
+  font-weight: 400;
+}
+
+.t-secao {
+  font-family: var(--fonte-display);
+  font-size: 22px;
+  line-height: 28px;
+  font-weight: 400;
+}
+
+.t-titulo {
+  font-family: var(--fonte-texto);
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 700;
+}
+
+.t-corpo {
+  font-family: var(--fonte-texto);
+  font-size: 17px;
+  line-height: 28px;
+  font-weight: 400;
+}
+
+.t-detalhe {
+  font-family: var(--fonte-texto);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.t-carimbo {
+  font-family: var(--fonte-texto);
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
